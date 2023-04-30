@@ -1,4 +1,4 @@
-import {createBrowserRouter} from "react-router-dom";
+import {Navigate, createBrowserRouter} from "react-router-dom";
 import Login from "./views/Login.jsx";
 import NotFound from "./views/NotFound.jsx";
 import DefaultLayout from "./components/DefaultLayout.jsx";
@@ -13,6 +13,10 @@ const router = createBrowserRouter( [
         element: <DefaultLayout />,
         children: [
             {
+                path: '/',
+                element: <Navigate to="/home" />
+            },
+            {
                 path: '/home',
                 element: <Home />
             },
@@ -20,10 +24,6 @@ const router = createBrowserRouter( [
                 path: '/favourite',
                 element: <Favourite />
             },
-            {
-                path: '*',
-                element: <NotFound />
-            }
         ]
     },
     {
@@ -38,6 +38,10 @@ const router = createBrowserRouter( [
                 path: '/signup',
                 element: <Signup />
             },
+            {
+                path: '*',
+                element: <NotFound />
+            }
         ]
     },
    

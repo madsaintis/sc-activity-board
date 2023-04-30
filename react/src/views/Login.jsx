@@ -67,11 +67,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-const onSubmit = (event) => {
-  event.preventDefault()
-}
+
 
 export default function Login() {
+  
+const onSubmit = (event) => {
+  event.preventDefault()
+  console.log(hey)
+}
+
   return (
     <div className='login-signup-form animated fadeInDown'>
       <div className='form'>
