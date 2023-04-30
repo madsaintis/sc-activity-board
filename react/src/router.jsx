@@ -3,6 +3,7 @@ import Login from "./views/Login.jsx";
 import NotFound from "./views/NotFound.jsx";
 import DefaultLayout from "./components/DefaultLayout.jsx";
 import { Children } from "react";
+import GuestLayout from "./components/GuestLayout.jsx";
 
 const router = createBrowserRouter( [
     {
