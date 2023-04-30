@@ -125,6 +125,7 @@ table > tbody > tr > td {
     color: white;
     border-radius: 0.5rem;
     margin-bottom: 1rem;
+    margin-top: 1rem;
 }
 
 .notification {

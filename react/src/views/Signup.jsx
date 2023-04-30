@@ -49,20 +49,20 @@ export default function Signup() {
             Signup 
           </h1>
 
-          { errors && <div className='alert'>
-            {  Object.keys(errors).map(key => (
-              <p>{errors[key][0]}</p>
-            )
-            )}
-          </div>
-          }
-
           <input ref={nameRef} placeholder='Name' />
           <input ref={emailRef} type ="email" placeholder='Email' />
           <input ref={passwordRef} type ="password" placeholder='Password' />
           <input ref={passwordConfirmationRef} type ="password" placeholder='Password Confirmation' />
           <button className='btn btn-block'>Signup</button>
 
+            { errors && <div className='alert'>
+            {  Object.keys(errors).map(key => (
+              <p>{errors[key][0]}</p>
+            )
+            )}
+            </div>
+          }
+          
           <p className='message'>
             Already registered? <Link to="/login">Login now</Link>
           </p>
