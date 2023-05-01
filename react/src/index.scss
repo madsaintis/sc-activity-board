@@ -183,24 +183,25 @@ table > tbody > tr > td {
     display: flex;
 } */
 
-#defaultLayout aside {
-    width: 240px;
+/* #defaultLayout aside {
+    width: 100px;
     background-color: #5b08a7;
-    padding: 1rem
-}
+    padding: 1rem;
+    margin: 1rem;
+} */
 
-#defaultLayout aside > a {
+/* #defaultLayout aside > a {
     display: block;
     padding: 0.75rem 1rem;
     border-radius: 6px;
     color: white;
     text-decoration: none;
     transition: all 0.2s;
-}
+} */
 
-#defaultLayout aside > a:hover {
+/* #defaultLayout aside > a:hover {
     background-color: rgba(0, 0, 0, 0.2);
-}
+} */
 
 #defaultLayout .content {
     flex: 1;
@@ -240,5 +241,59 @@ table > tbody > tr > td {
     100% {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+#Calendar {
+    display: flex;
+    flex-direction: row;
+    width: auto;
+    height: auto;
+    border: #00a762;
+    border-style: dotted;
+}
+
+#Calendar .Sidebar {
+    flex:1;
+    width: 100px;
+    padding: 1rem;
+    margin-top: 4rem;
+    border: black;
+    border-style: dotted;
+
+}
+
+#Calendar .Test {
+    flex:5;
+}
+
+.EventModal {
+    display: flex; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    justify-content: center; 
+    align-items: center; 
+    width: 100%; 
+    height: 100vh;  
+    z-index: 100;
+
+    .EventCreationScreen {
+        background-color: #ffffff; 
+        width: 25%; 
+        border-radius: 0.5rem; 
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
+    }
+
+    .ModalHeader {
+        display: flex; 
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem; 
+        padding-left: 1rem;
+        padding-right: 1rem; 
+        background-color: #F3F4F6; 
+        justify-content: space-between; 
+        align-items: center; 
+        color: #9CA3AF; 
     }
 }
