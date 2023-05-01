@@ -8,7 +8,9 @@ const StateContext = createContext(
         setUser: () => {},
         setToken: () => {},
         showEventModal: false,
-        setShowEventModal: () => {}
+        setShowEventModal: () => {},
+        setSelectedEvent: () => {},
+        selectedEvent: null,
     }
 )
 
@@ -16,6 +18,7 @@ export const ContextProvider = ({children}) => {
     const [user, setUser] = useState({});
     const [token, _setToken] = useState(localStorage.getItem("ACCESS_TOKEN"));
     const [showEventModal, setShowEventModal] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
 
     const setToken = (token) => {
         _setToken(token)
@@ -35,7 +38,9 @@ export const ContextProvider = ({children}) => {
             setUser,
             setToken,
             showEventModal,
-            setShowEventModal
+            setShowEventModal,
+            selectedEvent,
+            setSelectedEvent
         }}>
             {children}
         </StateContext.Provider>
