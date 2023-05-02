@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->dateTime('start_date');
-            $table->string('end_date');
+            $table->text('description');
+            $table->datetime('start_time');
+            $table->datetime('end_time');
+            $table->string('organiser');
             $table->timestamps();
         });
     }
