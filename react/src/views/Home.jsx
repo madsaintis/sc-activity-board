@@ -10,7 +10,6 @@ export default function Home() {
     <React.Fragment>
       {showEventModal && <EventModal />}
       <div id='Calendar'>
-        
         <Sidebar />
         <Calendar />
       </div>

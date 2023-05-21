@@ -4,7 +4,7 @@ import { Link, Navigate, Outlet } from 'react-router-dom'
 import axiosClient from '../axios-client'
 
 export default function DefaultLayout() {
-  const {user, token, setUser, setToken} = useStateContext();
+  const {user, token, setUser, setToken, setID} = useStateContext();
 
   if(!token) {
     return <Navigate to="/login" />
@@ -31,7 +31,7 @@ export default function DefaultLayout() {
       <div className='content'>
         <header>
           <Link to="/home">Home</Link>
-          <Link to="/favourite">Favourite</Link>
+          <Link to="/favourite">User</Link>
           <div>
             {user.name}
             <a href="#" onClick={onLogout} className="btn-logout">Logout</a>
