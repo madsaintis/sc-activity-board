@@ -18,4 +18,9 @@ class Event extends Model
         'date',
         'organiser'
     ];
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'event_categories', 'event_id', 'category_id');
+    }
 }

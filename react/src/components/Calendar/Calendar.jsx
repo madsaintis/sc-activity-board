@@ -33,7 +33,8 @@ export default function Calendar() {
             description: event.description,
             startTime: event.start_time,
             endTime: event.end_time,
-            organiser: event.organiser
+            organiser: event.organiser,
+            categories: event.categories
           }
         }
       })

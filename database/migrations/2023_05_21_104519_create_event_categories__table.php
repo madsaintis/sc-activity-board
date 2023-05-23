@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
-            $table->increments('category_id');
-            $table->string('category_name', 255)->unique();
+        Schema::create('event_categories', function (Blueprint $table) {
+            $table->integer('event_id')->unsigned()->references('id')->on('events');
+            $table->integer('category_id')->unsigned()->references('category_id')->on('categories');
         });
     }
 
@@ -22,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('event_categories');
     }
 };

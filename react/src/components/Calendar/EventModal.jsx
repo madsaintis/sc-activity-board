@@ -23,6 +23,10 @@ export default function EventModal() {
   const [endTime, setEndTime] = useState(selectedEvent ? selectedEvent.event.extendedProps.endTime : "");
   const [label, setLabel] = useState(null);
 
+  useEffect( () => {
+    console.log(selectedEvent.event.extendedProps.categories)
+  }, [])
+
   const onSubmit = (event) => {
     event.preventDefault();
     const payload = {
@@ -32,7 +36,8 @@ export default function EventModal() {
       start_time: startTimeRef.current.value,
       end_time: endTimeRef.current.value,
       date: selectedDate,
-      organiser: user.id
+      organiser: user.id,
+      categories: label.map(option => option.value)
     };
     axiosClient.post('/events', payload)
       .then((response) => {
@@ -58,7 +63,7 @@ export default function EventModal() {
         setSelectedEvent(null);
       })};
 
-  const handleLabelChange = (selectedOption) => {
+      const handleLabelChange = (selectedOption) => {;
         setLabel(selectedOption);
       };
 

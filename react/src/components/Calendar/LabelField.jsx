@@ -78,9 +78,9 @@ import React, { useState } from 'react';
 import Select from 'react-select';
 
 const options = [
-  { value: 'option1', label: 'Option 1', color: 'red' },
-  { value: 'option2', label: 'Option 2', color: 'blue' },
-  { value: 'option3', label: 'Option 3' },
+  { value: '1', label: 'Option 1', color: 'red' },
+  { value: '2', label: 'Option 2', color: 'blue' },
+  { value: '3', label: 'Option 3', color: 'green'},
 ];
 
 const customStyles = {

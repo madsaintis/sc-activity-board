@@ -20,14 +20,31 @@ class EventController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreEventRequest $request)
-    {
-        //
-        $data = $request->validated();
+    // public function store(StoreEventRequest $request)
+    // {
+    //     //
+    //     $data = $request->validated();
 
-        $event = Event::create($data);
-        return response(new EventResource($event), 201);
+    //     $event = Event::create($data);
+    //     $event->categories()->attach($request->categories);
+        
+    //     return response(new EventResource($event), 201);
+    // }
+
+    public function store(StoreEventRequest $request)
+{
+    $data = $request->validated();
+
+    $event = Event::create($data);
+    
+    // Retrieve the selected category IDs
+    if (isset($data['categories']) && is_array($data['categories'])) {
+        $event->categories()->attach($data['categories']);
     }
+
+    
+    return response(new EventResource($event), 201);
+}
 
     /**
      * Display the specified resource.
@@ -51,6 +68,8 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
+
+        $event->categories()->detach();
         $event -> delete();
         return response("", 204);
     }

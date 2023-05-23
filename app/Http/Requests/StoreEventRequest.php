@@ -29,6 +29,8 @@ class StoreEventRequest extends FormRequest
             'end_time' => 'nullable|required',
             'date' => 'nullable|required',
             'organiser' => 'nullable|required',
+            'categories' => 'nullable|array|required',
+            
         ];
     }
 }
