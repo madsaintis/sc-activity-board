@@ -14,20 +14,32 @@ export default function Favourite() {
     axiosClient.get('/users').then(({data}) => {
       setLoading(false)
       setUsers(data.data)
+      console.log(data.data)
     })
     .catch(() => {
       setLoading(false)
     })
   }
 
+  const handleRoleChange = (userId, event) => {
+    const { value } = event.target;
+    // Update the user's role in the state or send a request to update it on the server
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === userId ? { ...user, role: value } : user
+      )
+    );
+  };
+  
   return (
-    <div>Favourite<div className="card animated fadeInDown">
+    <div>List of users<div className="card animated fadeInDown">
     <table>
       <thead>
       <tr>
         <th>ID</th>
         <th>Name</th>
         <th>Email</th>
+        <th>Role</th>
       </tr>
       </thead>
       {loading &&
@@ -46,12 +58,21 @@ export default function Favourite() {
             <td>{u.id}</td>
             <td>{u.name}</td>
             <td>{u.email}</td>
+            <td>
+                    <select
+                      value={u.role}
+                      onChange={(e) => handleRoleChange(u.id, e)}
+                      defaultValue={u.role}
+                    >
+                      <option value="Event Participant">Event Participant</option>
+                      <option value="Event Organizer">Event Organizer</option>
+                    </select>
+                  </td>
           </tr>
         ))}
         </tbody>
       }
     </table>
   </div></div>
-
   )
 }

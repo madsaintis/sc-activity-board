@@ -31,9 +31,12 @@ export default function DefaultLayout() {
       <div className='content'>
         <header>
           <Link to="/home">Home</Link>
-          <Link to="/favourite">User</Link>
+          {
+            user.role == 'Admin' && <Link to="/favourite">User</Link>
+          }
+          
           <div>
-            {user.name}
+            <b>{user.name} ({user.role})</b>
             <a href="#" onClick={onLogout} className="btn-logout">Logout</a>
           </div>
         </header>
