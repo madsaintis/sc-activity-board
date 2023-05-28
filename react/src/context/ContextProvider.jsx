@@ -16,16 +16,23 @@ const StateContext = createContext(
         selectedDate: null,
         getEvents: () => {},
         eventsData: null,
+        initialEventsData: null,
+        label: null,
+        setLabel: () => {},
+        setEvents: () => {},
+        setInitialEvents: () => {}
     }
 )
 
 export const ContextProvider = ({children}) => {
     const [user, setUser] = useState({});
+    const [initialEventsData, setInitialEvents] = useState([]);
     const [eventsData, setEvents] = useState([]);
     const [token, _setToken] = useState(localStorage.getItem("ACCESS_TOKEN"));
     const [showEventModal, setShowEventModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
+    const [label, setLabel] = useState(null);
 
     const setToken = (token) => {
         _setToken(token)
@@ -40,6 +47,7 @@ export const ContextProvider = ({children}) => {
 
     const getEvents = () => {
         axiosClient.get('/events').then(({data}) => {
+          setInitialEvents(data.data)
           setEvents(data.data)
         })
         .catch(() => {
@@ -59,7 +67,11 @@ export const ContextProvider = ({children}) => {
             selectedDate,
             setSelectedDate,
             getEvents,
-            eventsData
+            eventsData,
+            label,
+            setLabel,
+            setEvents,
+            initialEventsData
         }}>
             {children}
         </StateContext.Provider>

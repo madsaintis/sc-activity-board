@@ -14,18 +14,27 @@ export default function EventModal() {
     const startTimeRef = useRef();
     const endTimeRef = useRef();
     
-  const {setShowEventModal, selectedEvent, setSelectedEvent, selectedDate, user, getEvents, setSelectedDate} = useStateContext();
+    const { setShowEventModal, selectedEvent, setSelectedEvent, selectedDate, user, getEvents, setSelectedDate } = useStateContext();
 
-  const [title, setTitle] = useState(selectedEvent ? selectedEvent.event.title : "");
-  const [description, setDescription] = useState(selectedEvent ? selectedEvent.event.extendedProps.description : "");
-  const [location, setLocation] = useState(selectedEvent ? selectedEvent.event.extendedProps.location : "");
-  const [startTime, setStartTime] = useState(selectedEvent ? selectedEvent.event.extendedProps.startTime : "");
-  const [endTime, setEndTime] = useState(selectedEvent ? selectedEvent.event.extendedProps.endTime : "");
-  const [label, setLabel] = useState(null);
+    const [title, setTitle] = useState(selectedEvent ? selectedEvent.event.title : "");
+    const [description, setDescription] = useState(selectedEvent ? selectedEvent.event.extendedProps.description : "");
+    const [location, setLocation] = useState(selectedEvent ? selectedEvent.event.extendedProps.location : "");
+    const [startTime, setStartTime] = useState(selectedEvent ? selectedEvent.event.extendedProps.startTime : "");
+    const [endTime, setEndTime] = useState(selectedEvent ? selectedEvent.event.extendedProps.endTime : "");
+    const [label, setLabel] = useState([]);
 
-  useEffect( () => {
-    console.log(selectedEvent.event.extendedProps.categories)
-  }, [])
+    const defaultCategories = selectedEvent?.event?.extendedProps?.categories?.map((category) => ({
+      value: String(category.category_id),
+      label: category.category_name,
+    }));
+  
+  // useEffect( () => {
+  //   console.log(selectedEvent.event.extendedProps.categories)
+  // }, [])
+
+  const handleLabelChange = (selectedOption) => {;
+    setLabel(selectedOption);
+  };
 
   const onSubmit = (event) => {
     event.preventDefault();
@@ -62,11 +71,7 @@ export default function EventModal() {
         setShowEventModal(false);
         setSelectedEvent(null);
       })};
-
-      const handleLabelChange = (selectedOption) => {;
-        setLabel(selectedOption);
-      };
-
+      
 return (
     <div className='EventModal animated fadeInDown'>
       <div className='EventCreationScreen'>
@@ -114,7 +119,11 @@ return (
           <label>End Time:</label>
           <input ref={endTimeRef} type="time" id="endTime" defaultValue={endTime} onChange={(e) => setEndTime(e.target.value)}/>
           
-          <LabelField onLabelChange={handleLabelChange}/>
+          {selectedEvent ? (
+  <LabelField onLabelChange={handleLabelChange} defaultCategories={defaultCategories}/>
+) : (
+  <LabelField onLabelChange={handleLabelChange}/>
+)}
           
           {!selectedEvent &&
           <button className='btn btn-block'>Create</button>}
