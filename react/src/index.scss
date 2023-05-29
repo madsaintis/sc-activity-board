@@ -58,6 +58,7 @@ input:focus {
     -webkit-transition: all 0.3 ease;
     transition: all 0.3 ease;
     cursor: pointer;
+    margin-top: 15px;
 }
 
 .btn-block {
@@ -370,7 +371,16 @@ table > tbody > tr > td {
       }
 }
 
-
+.visibility {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 5px;
+  }
+  
+  .visibility label {
+    margin-right: 10px;
+  }
 // TESTING
 
 .dropdown-field {

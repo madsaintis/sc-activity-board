@@ -14,7 +14,7 @@ const StateContext = createContext(
         selectedEvent: null,
         setSelectedDate: () => {},
         selectedDate: null,
-        getEvents: () => {},
+        getPublicEvents: () => {},
         eventsData: null,
         initialEventsData: null,
         label: null,
@@ -59,7 +59,7 @@ export const ContextProvider = ({children}) => {
         }
     }
 
-    const getEvents = () => {
+    const getPublicEvents = () => {
         axiosClient.get('/events').then(({data}) => {
           setInitialEvents(data.data)
           setEvents(data.data)
@@ -67,6 +67,16 @@ export const ContextProvider = ({children}) => {
         .catch(() => {
         })
       }
+
+    const getPrivateEvents = () => {
+        axiosClient.get('/events').then(({data}) => {
+          setInitialEvents(data.data)
+          setEvents(data.data)
+        })
+        .catch(() => {
+        })
+      }
+
 
     return (
         <StateContext.Provider value={{
@@ -80,7 +90,7 @@ export const ContextProvider = ({children}) => {
             setSelectedEvent,
             selectedDate,
             setSelectedDate,
-            getEvents,
+            getPublicEvents,
             eventsData,
             label,
             setLabel,

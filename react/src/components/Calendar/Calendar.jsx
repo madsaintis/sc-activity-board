@@ -5,10 +5,10 @@ import interactionPlugin from "@fullcalendar/interaction"
 import { useStateContext } from '../../context/ContextProvider';
 
 export default function Calendar() {
-  const { setShowEventModal, setSelectedEvent, setSelectedDate, eventsData, getEvents, setEvents } = useStateContext();
+  const { setShowEventModal, setSelectedEvent, setSelectedDate, eventsData, getPublicEvents, setEvents } = useStateContext();
 
   useEffect(() => {
-    getEvents();
+    getPublicEvents();
   }, []);
 
   const handleEvent = (args) => {
@@ -16,21 +16,8 @@ export default function Calendar() {
     setShowEventModal(true);
   }
 
-  const filterEventsData = () => {
-    console.log('Original eventsData:s', eventsData);
-  
-    const filteredData = eventsData.filter(event => {
-      const categoryIds = event.categories.map(category => category.category_id);
-      return categoryIds.includes(1);
-    });
-  
-    console.log('Filtered eventsData:', filteredData);
-    setEvents(filteredData);
-  };
-
   return (
     <div className='Test'>
-      <button onClick={filterEventsData}> HAI</button>
       <FullCalendar 
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView='dayGridMonth'
@@ -46,7 +33,8 @@ export default function Calendar() {
                 startTime: event.start_time,
                 endTime: event.end_time,
                 organiser: event.organiser,
-                categories: event.categories
+                categories: event.categories,
+                isPublic: event.isPublic,
               }
             }
           })

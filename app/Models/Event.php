@@ -16,7 +16,8 @@ class Event extends Model
         'start_time', 
         'end_time',
         'date',
-        'organiser'
+        'organiser',
+        'is_public'
     ];
 
     public function categories()
