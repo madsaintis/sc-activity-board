@@ -1,8 +1,11 @@
-import {createBrowserRouter} from "react-router-dom";
+import {Navigate, createBrowserRouter} from "react-router-dom";
 import Login from "./views/Login.jsx";
 import NotFound from "./views/NotFound.jsx";
 import DefaultLayout from "./components/DefaultLayout.jsx";
-import { Children } from "react";
+import GuestLayout from "./components/GuestLayout.jsx";
+import Signup from "./views/Signup.jsx";
+import Home from "./views/Home.jsx";
+import Favourite from "./views/Favourite.jsx";
 
 const router = createBrowserRouter( [
     {
@@ -10,9 +13,17 @@ const router = createBrowserRouter( [
         element: <DefaultLayout />,
         children: [
             {
-                path: '*',
-                element: <NotFound />
-            }
+                path: '/',
+                element: <Navigate to="/home" />
+            },
+            {
+                path: '/home',
+                element: <Home />
+            },
+            {
+                path: '/favourite',
+                element: <Favourite />
+            },
         ]
     },
     {
@@ -23,6 +34,14 @@ const router = createBrowserRouter( [
                 path: '/login',
                 element: <Login />
             },
+            {
+                path: '/signup',
+                element: <Signup />
+            },
+            {
+                path: '*',
+                element: <NotFound />
+            }
         ]
     },
    
