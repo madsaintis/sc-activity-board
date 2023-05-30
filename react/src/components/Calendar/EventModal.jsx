@@ -20,7 +20,7 @@ export default function EventModal() {
     setSelectedEvent,
     selectedDate,
     user,
-    getPublicEvents,
+    getEvents,
     setSelectedDate,
   } = useStateContext();
 
@@ -103,7 +103,7 @@ export default function EventModal() {
     axiosClient
       .post("/events", payload)
       .then((response) => {
-        getPublicEvents();
+        getEvents();
         setShowEventModal(null);
       })
       .catch((error) => {
@@ -117,7 +117,7 @@ export default function EventModal() {
       return;
     }
     axiosClient.delete(`/events/${selectedEvent.event.id}`).then(() => {
-      getPublicEvents();
+      getEvents();
       alert("Event was successfully deleted");
       setShowEventModal(false);
       setSelectedEvent(null);

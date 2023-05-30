@@ -5,10 +5,10 @@ import interactionPlugin from "@fullcalendar/interaction"
 import { useStateContext } from '../../context/ContextProvider';
 
 export default function Calendar() {
-  const { setShowEventModal, setSelectedEvent, setSelectedDate, eventsData, getPublicEvents, setEvents } = useStateContext();
+  const { setShowEventModal, setSelectedEvent, setSelectedDate, eventsData, getEvents, getPrivateEvents} = useStateContext();
 
   useEffect(() => {
-    getPublicEvents();
+    getEvents();
   }, []);
 
   const handleEvent = (args) => {

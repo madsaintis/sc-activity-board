@@ -13,9 +13,18 @@ class EventController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        return EventResource::collection(Event::query()->orderBy('id', 'asc')->paginate());
-    }
+{
+    $publicEvents = Event::where('is_Public', true)->orderBy('id', 'asc')->get();
+
+    $privateEvents = Event::where('is_Public', false)
+                          ->where('organiser', auth()->id())
+                          ->orderBy('id', 'asc')
+                          ->get();
+
+    $events = $publicEvents->concat($privateEvents);
+
+    return EventResource::collection($events);
+}
 
     /**
      * Store a newly created resource in storage.
