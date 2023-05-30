@@ -12,6 +12,7 @@ export default function Calendar() {
   }, []);
 
   const handleEvent = (args) => {
+    setSelectedDate(args.event.start.toISOString())
     setSelectedEvent(args);
     setShowEventModal(true);
   }
@@ -32,14 +33,16 @@ export default function Calendar() {
                 description: event.description,
                 startTime: event.start_time,
                 endTime: event.end_time,
-                organiser: event.organiser,
+                organiser: BigInt(event.organiser),
                 categories: event.categories,
                 isPublic: event.isPublic,
+                image: event.poster
               }
             }
           })
         }
         dateClick={function(args) {
+          console.log(args.date)
           setSelectedDate(args.date);
           setShowEventModal(true);
         }}

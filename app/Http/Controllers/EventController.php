@@ -44,6 +44,12 @@ class EventController extends Controller
 {
     $data = $request->validated();
 
+    // Handle poster upload
+    if ($request->hasFile('poster')) {
+        $poster = $request->file('poster');
+        $data['poster'] = file_get_contents($poster);
+    }
+
     $event = Event::create($data);
     
     // Retrieve the selected category IDs
@@ -68,8 +74,25 @@ class EventController extends Controller
      */
     public function update(UpdateEventRequest $request, Event $event)
     {
-        $data = $request -> validated();
+        $data = $request->validated();
+
+        // Handle poster upload
+        if ($request->hasFile('poster')) {
+            $poster = $request->file('poster');
+            $data['poster'] = file_get_contents($poster);
+        }
+
         $event->update($data);
+
+        // Update the selected category IDs
+        if (isset($data['categories']) && is_array($data['categories'])) {
+            $event->categories()->sync($data['categories']);
+        } else {
+            // If no categories are provided, detach all categories
+            $event->categories()->detach();
+        }
+
+        return response(new EventResource($event), 201);
     }
 
     /**

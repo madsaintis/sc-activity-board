@@ -25,6 +25,7 @@ class EventResource extends JsonResource
             'location' => $this -> location,
             'isPublic' => $this -> is_public,
             'categories' => $this->categories,
+            'poster' => base64_encode($this->poster),
             //'created_at' => $this -> created_at -> format('Y-m-d H:i:s'),
         ];
     }

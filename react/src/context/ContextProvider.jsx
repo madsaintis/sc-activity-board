@@ -21,7 +21,8 @@ const StateContext = createContext(
         setLabel: () => {},
         setEvents: () => {},
         setInitialEvents: () => {},
-        categories: null
+        categories: null,
+        setNotification: () => {}
     }
 )
 
@@ -34,6 +35,8 @@ export const ContextProvider = ({children}) => {
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
     const [label, setLabel] = useState(null);
+    const [notification, _setNotification] = useState('');
+    
 
     const categories = [
         { value: '1', label: 'Year 1', color: 'red' },
@@ -48,6 +51,16 @@ export const ContextProvider = ({children}) => {
         { value: '10', label: 'Sports', color: 'pink' },
     ];
 
+    const setNotification = (message) => {
+        _setNotification(message);
+    
+        setTimeout(() => {
+          _setNotification('')
+        }, 5000)
+
+        console.log(message)
+      }
+
     const setToken = (token) => {
         _setToken(token)
         if(token) {
@@ -60,13 +73,20 @@ export const ContextProvider = ({children}) => {
     }
 
     const getEvents = () => {
-        axiosClient.get('/events').then(({data}) => {
-          setInitialEvents(data.data)
-          setEvents(data.data)
+        axiosClient.get('/events')
+        .then((response) => {
+          const events = response.data.data;
+          if (Array.isArray(events)) {
+            setInitialEvents(events);
+            setEvents(events);
+          } else {
+            console.log('Response data is not an array:', events);
+          }
         })
-        .catch(() => {
-        })
-      }
+        .catch((error) => {
+          console.log('Error retrieving events:', error);
+        });
+      };
 
       
 
@@ -88,7 +108,9 @@ export const ContextProvider = ({children}) => {
             setLabel,
             setEvents,
             initialEventsData,
-            categories
+            categories,
+            setNotification,
+            notification
         }}>
             {children}
         </StateContext.Provider>

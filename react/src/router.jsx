@@ -6,6 +6,8 @@ import GuestLayout from "./components/GuestLayout.jsx";
 import Signup from "./views/Signup.jsx";
 import Home from "./views/Home.jsx";
 import Favourite from "./views/Favourite.jsx";
+import UserForm from "./views/UserForm.jsx";
+import Users from "./views/Users.jsx";
 
 const router = createBrowserRouter( [
     {
@@ -24,6 +26,18 @@ const router = createBrowserRouter( [
                 path: '/favourite',
                 element: <Favourite />
             },
+            {
+                path: '/users',
+                element: <Users />
+            },
+            {
+                path: '/users/new',
+                element: <UserForm key="userCreate" />
+            },
+            {
+                path: '/users/:id',
+                element: <UserForm key="userUpdate" />
+            }
         ]
     },
     {
