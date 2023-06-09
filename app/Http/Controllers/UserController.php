@@ -7,6 +7,9 @@ use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
+use App\Mail\VerificationEmail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -30,8 +33,15 @@ class UserController extends Controller
         $data = $request->validated();
 
         $data['password'] = bcrypt($data['password']);
+        $data['verification_token'] = Str::random(40);
         $user = User::create($data);
+
+        //  // Send verification email
+        // Mail::to($user->email)->send(new VerificationEmail($user->verification_token));
+
         return response(new UserResource($user), 201);
+
+
     }
 
     /**

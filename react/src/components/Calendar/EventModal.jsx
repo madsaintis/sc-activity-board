@@ -1,11 +1,17 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState, useEffect } from "react";
-import { faTimesCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
+import React, { useState } from "react";
+import {
+  faTimesCircle,
+  faTrash,
+  faStar,
+} from "@fortawesome/free-solid-svg-icons";
 import { useStateContext } from "../../context/ContextProvider";
 import { useRef } from "react";
 import axiosClient from "../../axios-client";
 import LabelField from "./LabelField";
-import { Button, Typography } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
+import ModalImage from "react-modal-image";
+import CloseIcon from "@mui/icons-material/Close";
 
 export default function EventModal() {
   const titleRef = useRef();
@@ -44,7 +50,13 @@ export default function EventModal() {
   const [image, setImage] = useState(
     selectedEvent ? selectedEvent.event.extendedProps.image : null
   );
+
+  const [changed, setChanged] = useState(false);
+
   const [previewURL, setPreviewURL] = useState(null);
+
+  const largerImageURL = `data:image/jpeg;base64,${image}`;
+
   const [isPublic, setIsPublic] = useState(
     selectedEvent ? selectedEvent.event.extendedProps.isPublic : false
   );
@@ -56,10 +68,48 @@ export default function EventModal() {
     }));
 
   const [label, setLabel] = useState(selectedEvent ? defaultCategories : []);
+
+  const [isStarred, setIsStarred] = useState(selectedEvent ? selectedEvent.event.extendedProps.isFavourite : false);
+  
+  console.log(selectedEvent)
+  // End of Variable Declaration
+  // -------------------------------------------------------------------------------------/
+
+  const addToFavorites = () => {
+    const favoriteData = {
+      userId: user.id,
+      eventId: selectedEvent.event.id,
+    };
+
+    axiosClient
+      .post("/favourites", favoriteData)
+      .then((response) => {
+        // Add any necessary logic here
+        console.log("Event added to favorites");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const removeFromFavorites = () => {
+    console.log("HELLO");
+    axiosClient
+      .delete(`/favourites/${user.id}/${selectedEvent.event.id}`)
+      .then((response) => {
+        // Add any necessary logic here
+        console.log("Event removed from favorites");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  // Image Upload Function
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
+    setChanged(true);
     setImage(file);
-
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -69,19 +119,19 @@ export default function EventModal() {
     reader.readAsDataURL(file);
   };
 
-  // useEffect(() => {
-  //   console.log('imagec:', label);
-  // }, [label]);
-
+  // Image Removal Function
   const handleImageRemove = () => {
+    setChanged(true);
     setImage(null);
     setPreviewURL(null);
   };
 
+  // Check labels of event
   const handleLabelChange = (selectedOption) => {
     setLabel(selectedOption);
   };
 
+  // Check if event is public or not
   const handleVisibilityChange = (event) => {
     const checkboxId = event.target.id;
     if (checkboxId === "privateCheckbox") {
@@ -91,6 +141,19 @@ export default function EventModal() {
     }
   };
 
+  // Handle star button click
+  const handleStarClick = () => {
+    setIsStarred((prevIsStarred) => !prevIsStarred);
+    if (!isStarred) {
+      addToFavorites();
+    } else {
+      removeFromFavorites();
+    }
+
+    getEvents();
+  };
+
+  // Event Creation Function
   const onSubmit = (event) => {
     event.preventDefault();
 
@@ -123,6 +186,7 @@ export default function EventModal() {
       .post("/events", formData, config)
       .then((response) => {
         getEvents();
+        setNotification("Event created successfully");
         setShowEventModal(null);
       })
       .catch((error) => {
@@ -130,9 +194,9 @@ export default function EventModal() {
       });
   };
 
+  // Event Update Function
   const onUpdate = (event) => {
     event.preventDefault();
-
     const formData = new FormData();
 
     formData.append("_method", "PUT");
@@ -144,12 +208,12 @@ export default function EventModal() {
     formData.append("date", selectedDate);
     formData.append("organiser", user.id);
     formData.append("is_public", isPublic ? "1" : "0");
+    formData.append("changed", changed);
 
     // Add condition to append the updated poster image if available
-  //   if (image) {
-  //     const file = base64ToFile(image, 'image.jpg');
-  // formData.append('poster', file);
-  //   }
+    if (changed) {
+      if (image) formData.append("poster", image);
+    }
 
     label.forEach((option) => {
       formData.append("categories[]", option.value);
@@ -160,11 +224,11 @@ export default function EventModal() {
         "Content-Type": "multipart/form-data",
       },
     };
-    // Make a PUT request instead of POST for updating an existing event
+
     axiosClient
-      .post(`/events/${selectedEvent.event.id}`, formData, config) // Replace `eventId` with the ID of the event being updated
+      .post(`/events/${selectedEvent.event.id}`, formData, config)
       .then((response) => {
-        setNotification("Event edited successfully.")
+        setNotification("Event edited successfully.");
         getEvents();
         setShowEventModal(null);
       })
@@ -173,6 +237,7 @@ export default function EventModal() {
       });
   };
 
+  // Event Deletion Function
   const onDelete = (event) => {
     event.preventDefault();
     if (!window.confirm("Are you sure you want to delete this event?")) {
@@ -186,20 +251,16 @@ export default function EventModal() {
     });
   };
 
-  useEffect(() => {
-    console.log(selectedEvent?.event?.extendedProps.organiser);
-    console.log(user.role);
-  }, [selectedEvent]);
   return (
     <div className="EventModal animated fadeInDown">
       <div className="EventCreationScreen">
         <form onSubmit={onSubmit}>
           {(selectedEvent?.event?.extendedProps.organiser == user.id ||
-            (user.role === "Admin" && selectedEvent)) && 
-              <button className="btn-delete" onClick={onDelete}>
-                <FontAwesomeIcon icon={faTrash} />
-              </button>
-            }
+            (user.role === "Admin" && selectedEvent)) && (
+            <button className="btn-delete" onClick={onDelete}>
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
+          )}
           <button
             className="btn-close"
             onClick={function () {
@@ -213,57 +274,85 @@ export default function EventModal() {
           {!selectedEvent ? (
             <h1 className="title">Create Event</h1>
           ) : (
-            <h1 className="title">{selectedEvent.event.title}</h1>
-          )}
-          {/* <label>Upload Image:</label>
-          <input type="file" onChange={handleImageUpload} />
-
-          {previewURL && (
-            <div>
-              <h2>Image Preview:</h2>
-              <img src={previewURL} alt="Preview" style={{ width: "200px" }} />
-            </div>
-          )} */}
-          {!selectedEvent && (
-            <>
-              <input
-                accept="image/*"
-                type="file"
-                id="image-upload"
-                style={{ display: "none" }}
-                onChange={handleImageUpload}
+            <h1 className="title">
+              {selectedEvent.event.title}
+              <FontAwesomeIcon
+                icon={faStar}
+                onClick={handleStarClick}
+                color={isStarred ? "#FFC107" : "inherit"}
               />
-              <label htmlFor="image-upload">
-                <Button variant="contained" component="span">
-                  Upload Image
-                </Button>
-              </label>
-            </>
+            </h1>
           )}
-          {previewURL && (
-            <div>
-              <Typography variant="h6">Image Preview:</Typography>
-              <img
-                src={previewURL}
-                alt="Preview"
-                style={{ maxWidth: "100%" }}
-              />
 
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={handleImageRemove}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {!previewURL && !image ? (
+              <div>
+                {/* Your existing code for the file input */}
+                <input
+                  accept="image/*"
+                  type="file"
+                  id="image-upload"
+                  style={{ display: "none" }}
+                  onChange={handleImageUpload}
+                />
+                {/* Your existing code for the label and button */}
+                <label htmlFor="image-upload">
+                  <Button variant="contained" component="span">
+                    Upload Image
+                  </Button>
+                </label>
+              </div>
+            ) : (
+              <div
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "40vh",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  position: "relative",
+                  // border: "2px solid blue",
+                  overflow: "hidden",
+                  marginBottom: "10px",
+                }}
               >
-                Remove
-              </Button>
-            </div>
-          )}
+                <ModalImage
+                  small={previewURL || largerImageURL}
+                  large={previewURL || largerImageURL}
+                  // alt={previewURL ? "Preview" : "Poster"}
+                  hideDownload={true}
+                  hideZoom={true}
+                />
 
-          {image ? (
-            <img src={`data:image/jpeg;base64,${image}`} alt="Poster" />
-          ) : (
-            <p style={{ color: "gray" }}>No poster uploaded</p>
-          )}
+                {/* X button */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "5px",
+                    right: "5px",
+                  }}
+                >
+                  <IconButton
+                    onClick={handleImageRemove}
+                    size="small"
+                    style={{
+                      background: "rgba(0, 0, 0, 0.5)",
+                      color: "white",
+                      fontSize: "0.5rem",
+                    }}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                </div>
+              </div>
+            )}
+          </div>
 
           <label>Title</label>
           <input
@@ -272,6 +361,7 @@ export default function EventModal() {
             defaultValue={title}
             onChange={(e) => setTitle(e.target.value)}
           />
+
           <label>Location</label>
           <input
             ref={LocationRef}
@@ -279,6 +369,7 @@ export default function EventModal() {
             defaultValue={location}
             onChange={(e) => setLocation(e.target.value)}
           />
+
           <label>Description</label>
           <textarea
             ref={descriptionRef}
@@ -286,6 +377,7 @@ export default function EventModal() {
             defaultValue={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+
           <label>Start Time:</label>
           <input
             ref={startTimeRef}
@@ -294,6 +386,7 @@ export default function EventModal() {
             defaultValue={startTime}
             onChange={(e) => setStartTime(e.target.value)}
           />
+
           <label>End Time:</label>
           <input
             ref={endTimeRef}
@@ -302,6 +395,7 @@ export default function EventModal() {
             defaultValue={endTime}
             onChange={(e) => setEndTime(e.target.value)}
           />
+
           <label>Label</label>
           {selectedEvent ? (
             <LabelField
@@ -311,6 +405,7 @@ export default function EventModal() {
           ) : (
             <LabelField onLabelChange={handleLabelChange} />
           )}
+
           <label>Visibility</label>
           <div>
             <label>
@@ -323,6 +418,7 @@ export default function EventModal() {
                 disabled={user.role === "Event Participant"}
               />
             </label>
+
             <label>
               Public
               <input
@@ -334,16 +430,15 @@ export default function EventModal() {
               />
             </label>
           </div>
-          {!selectedEvent && (
-            <button className="btn btn-block">Create</button>
-          ) }
-          
-          {selectedEvent?.event?.extendedProps.organiser == user.id && 
-          <button className="btn btn-block" onClick={onUpdate}>
+
+          {!selectedEvent && <button className="btn btn-block">Create</button>}
+
+          {selectedEvent?.event?.extendedProps.organiser == user.id && (
+            <button className="btn btn-block" onClick={onUpdate}>
               Edit
-            </button>}
-            
-          
+            </button>
+          )}
+
           {/* { errors && <div className='alert'>
             {  Object.keys(errors).map(key => (
               <p>{errors[key][0]}</p>

@@ -32,6 +32,7 @@ class UpdateEventRequest extends FormRequest
             'categories' => 'nullable|array|required',
             'is_public' => 'boolean',
             'poster' => [
+                'sometimes',
                 'nullable',
                 'image', // Validates that the file is an image
                 'mimes:jpeg,png', // Specifies the allowed image MIME types

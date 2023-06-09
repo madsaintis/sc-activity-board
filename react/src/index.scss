@@ -284,6 +284,7 @@ table > tbody > tr > td {
 
 .EventModal {
     overflow-y: auto;
+    overflow: hidden;
     display: flex; 
     position: fixed; 
     top: 0; 

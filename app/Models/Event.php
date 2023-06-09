@@ -25,4 +25,10 @@ class Event extends Model
     {
         return $this->belongsToMany(Category::class, 'event_categories', 'event_id', 'category_id');
     }
+
+    public function favouritedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'favourites', 'event_id', 'user_id');
+    }
+
 }

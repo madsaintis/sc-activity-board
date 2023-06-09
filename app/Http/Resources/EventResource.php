@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class EventResource extends JsonResource
 {
@@ -14,6 +15,9 @@ class EventResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
+        $user = Auth::user();
+
         return [
             'id' => $this -> id,
             'title' => $this -> title,
@@ -26,7 +30,13 @@ class EventResource extends JsonResource
             'isPublic' => $this -> is_public,
             'categories' => $this->categories,
             'poster' => base64_encode($this->poster),
+            'isFavourite' => $this->isFavorite($user),
             //'created_at' => $this -> created_at -> format('Y-m-d H:i:s'),
         ];
+    }
+
+    private function isFavorite($user)
+    {
+        return $user ? $user->favourites->contains('event_id', $this->id) : false;
     }
 }

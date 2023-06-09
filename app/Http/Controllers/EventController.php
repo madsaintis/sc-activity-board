@@ -72,28 +72,37 @@ class EventController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEventRequest $request, Event $event)
-    {
-        $data = $request->validated();
+   public function update(UpdateEventRequest $request, Event $event)
+{
+    $data = $request->validated();
 
-        // Handle poster upload
-        if ($request->hasFile('poster')) {
-            $poster = $request->file('poster');
-            $data['poster'] = file_get_contents($poster);
-        }
+    // Check the 'changed' value from the request
+    $changed = $request->input('changed') === 'true';
 
-        $event->update($data);
-
-        // Update the selected category IDs
-        if (isset($data['categories']) && is_array($data['categories'])) {
-            $event->categories()->sync($data['categories']);
-        } else {
-            // If no categories are provided, detach all categories
-            $event->categories()->detach();
-        }
-
-        return response(new EventResource($event), 201);
+    // Handle poster upload if the image file has changed
+    if ($changed && $request->hasFile('poster')) {
+        $poster = $request->file('poster');
+        $data['poster'] = file_get_contents($poster);
+    } elseif ($changed) {
+        // If the 'changed' value is 'true' but no new poster file provided,
+        // you can perform any other necessary actions here
+        // ...
+        $data['poster'] = null;
     }
+
+    // Update the event data
+    $event->update($data);
+
+    // Update the selected category IDs
+    if (isset($data['categories']) && is_array($data['categories'])) {
+        $event->categories()->sync($data['categories']);
+    } else {
+        // If no categories are provided, detach all categories
+        $event->categories()->detach();
+    }
+
+    return response(new EventResource($event), 201);
+}
 
     /**
      * Remove the specified resource from storage.
@@ -105,4 +114,5 @@ class EventController extends Controller
         $event -> delete();
         return response("", 204);
     }
+
 }

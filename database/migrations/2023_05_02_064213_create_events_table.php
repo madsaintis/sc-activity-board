@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('end_time');
             $table->string('organiser');
             $table->boolean('is_public');
+            $table->binary('poster')->nullable();
             $table->timestamps();
         });
     }

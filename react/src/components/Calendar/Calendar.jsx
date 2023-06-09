@@ -36,7 +36,8 @@ export default function Calendar() {
                 organiser: BigInt(event.organiser),
                 categories: event.categories,
                 isPublic: event.isPublic,
-                image: event.poster
+                image: event.poster,
+                isFavourite: event.isFavourite
               }
             }
           })

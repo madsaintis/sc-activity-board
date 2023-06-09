@@ -48,7 +48,7 @@ export default function Users() {
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>
-            <th>Create Date</th>
+            <th>Role</th>
             <th>Actions</th>
           </tr>
           </thead>
