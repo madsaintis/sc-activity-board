@@ -22,12 +22,15 @@ const StateContext = createContext(
         setEvents: () => {},
         setInitialEvents: () => {},
         categories: null,
-        setNotification: () => {}
+        tags: null,
+        setNotification: () => {},
+        getTags: () => {}
     }
 )
 
 export const ContextProvider = ({children}) => {
     const [user, setUser] = useState({});
+    const [tags, setTags] = useState([]);
     const [initialEventsData, setInitialEvents] = useState([]);
     const [eventsData, setEvents] = useState([]);
     const [favouriteEventsData, setFavouritedEvents] = useState([]);
@@ -92,6 +95,20 @@ export const ContextProvider = ({children}) => {
         });
       };
 
+    
+      const getTags = () => {
+        axiosClient
+          .get("/categories") // Replace "/categories" with the actual API endpoint for fetching categories
+          .then((response) => {
+            const categories = response.data;
+            setTags(categories);
+            // Process the retrieved categories as needed
+          })
+          .catch((error) => {
+            console.error("Error fetching categories:", error);
+          });
+      };
+
       
 
     return (
@@ -115,7 +132,9 @@ export const ContextProvider = ({children}) => {
             categories,
             setNotification,
             notification,
-            favouriteEventsData
+            favouriteEventsData,
+            getTags,
+            tags
         }}>
             {children}
         </StateContext.Provider>

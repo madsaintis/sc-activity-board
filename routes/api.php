@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FavoriteController;
 use Illuminate\Http\Request;
@@ -26,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::apiResource('/users', UserController::class);
     Route::apiResource('/events', EventController::class);
+    Route::apiResource('/categories', CategoryController::class);
     Route::post('/favourites', [FavoriteController::class, 'store']);
     Route::delete('/favourites/{userId}/{eventId}', [FavoriteController::class, 'destroy']);
 
