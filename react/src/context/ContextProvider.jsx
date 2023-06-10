@@ -30,6 +30,7 @@ export const ContextProvider = ({children}) => {
     const [user, setUser] = useState({});
     const [initialEventsData, setInitialEvents] = useState([]);
     const [eventsData, setEvents] = useState([]);
+    const [favouriteEventsData, setFavouritedEvents] = useState([]);
     const [token, _setToken] = useState(localStorage.getItem("ACCESS_TOKEN"));
     const [showEventModal, setShowEventModal] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
@@ -77,8 +78,11 @@ export const ContextProvider = ({children}) => {
         .then((response) => {
           const events = response.data.data;
           if (Array.isArray(events)) {
+            const favouritedEvents = events.filter((event) => event.isFavourite);
+            console.log(favouritedEvents);
             setInitialEvents(events);
             setEvents(events);
+            setFavouritedEvents(favouritedEvents);
           } else {
             console.log('Response data is not an array:', events);
           }
@@ -110,7 +114,8 @@ export const ContextProvider = ({children}) => {
             initialEventsData,
             categories,
             setNotification,
-            notification
+            notification,
+            favouriteEventsData
         }}>
             {children}
         </StateContext.Provider>
