@@ -118,6 +118,11 @@ table > tbody > tr > td {
     white-space: nowrap;
 }
 
+.homePage {
+    margin: 0px;
+    padding: 0px;
+}
+
 .card {
     background-color: #FFF;
     border-radius: 0.5rem;
@@ -213,6 +218,7 @@ table > tbody > tr > td {
 
 #defaultLayout .content {
     flex: 1;
+    
 }
 
 #defaultLayout header {
@@ -226,8 +232,15 @@ table > tbody > tr > td {
 }
 
 #defaultLayout main {
-    padding: 2rem;
+    padding: 0;
+    border-style: double;
 }
+
+.calendar-container {
+    width: 100%;
+    height: 100%;
+  }
+  
 
 .animated {
     -webkit-animation-duration: 0.3s;
@@ -235,6 +248,30 @@ table > tbody > tr > td {
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
 }
+
+.calendarContainer {
+    position: relative;
+    /* Add any additional styles to the calendar container if needed */
+  }
+  
+  .eventModalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Adjust the background color and opacity as desired */
+    z-index: 9999; /* Ensure the modal is on top of other elements */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .eventModalWrapper {
+    background-color: #fff; /* Adjust the background color as needed */
+    padding: 16px;
+    /* Add any additional styles to the modal wrapper if needed */
+  }
 
 .fadeInDown {
     -webkit-animation-name: fadeInDown;
@@ -278,22 +315,38 @@ table > tbody > tr > td {
     }
 }
 
+.bold {
+    font-weight: bold;
+}
+
+.filter {
+    display: inline-block;
+    border: 1px solid black;
+    background-color: gray;
+    padding: 5px;
+    margin: 10px;
+  }
+
 #Calendar .Test {
     flex:5;
 }
 
+
+.weekend {
+    background-color: yellow;
+  }
+  
 .EventModal {
-    overflow-y: auto;
-    overflow: hidden;
-    display: flex; 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    justify-content: center; 
-    align-items: center; 
-    width: 100%; 
-    height: 100vh;  
-    z-index: 100;
+     position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Adjust the background color and opacity as desired */
+  z-index: 9999; /* Ensure the modal is on top of other elements */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
     .title {
         display: flex;

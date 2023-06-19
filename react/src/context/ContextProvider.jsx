@@ -24,13 +24,16 @@ const StateContext = createContext(
         categories: null,
         tags: null,
         setNotification: () => {},
-        getTags: () => {}
+        getTags: () => {},
+        verifyEmail: null,
+        setVerifyEmail: () => {}
     }
 )
 
 export const ContextProvider = ({children}) => {
     const [user, setUser] = useState({});
     const [tags, setTags] = useState([]);
+    const [verifyEmail, setVerifyEmail] = useState(false);
     const [initialEventsData, setInitialEvents] = useState([]);
     const [eventsData, setEvents] = useState([]);
     const [favouriteEventsData, setFavouritedEvents] = useState([]);
@@ -77,12 +80,13 @@ export const ContextProvider = ({children}) => {
     }
 
     const getEvents = () => {
+      setEvents([]);
         axiosClient.get('/events')
         .then((response) => {
           const events = response.data.data;
           if (Array.isArray(events)) {
             const favouritedEvents = events.filter((event) => event.isFavourite);
-            console.log(favouritedEvents);
+            // console.log(favouritedEvents);
             setInitialEvents(events);
             setEvents(events);
             setFavouritedEvents(favouritedEvents);
@@ -134,7 +138,9 @@ export const ContextProvider = ({children}) => {
             notification,
             favouriteEventsData,
             getTags,
-            tags
+            tags,
+            verifyEmail,
+            setVerifyEmail
         }}>
             {children}
         </StateContext.Provider>

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useStateContext } from '../context/ContextProvider';
 import axiosClient from '../axios-client';
@@ -8,7 +8,7 @@ export default function Login() {
   const emailRef = useRef();
   const passwordRef = useRef();
   const [errors, setErrors] = useState(null);
-  const {setUser, setToken} = useStateContext();
+  const {setUser, setToken, verifyEmail} = useStateContext();
 
   const onSubmit = (event) => {
     event.preventDefault()
@@ -41,6 +41,10 @@ export default function Login() {
         }
       })
   }
+
+  useEffect (() => {
+    console.log(verifyEmail)
+  }, []);
 
   return (
     <div className='login-signup-form animated fadeInDown'>

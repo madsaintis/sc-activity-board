@@ -1,22 +1,31 @@
 
 import React, { useEffect, useState } from 'react';
-import Sidebar from '../components/Calendar/Sidebar';
 import Calendar from '../components/Calendar/Calendar';
 import { useStateContext } from '../context/ContextProvider';
 import EventModal from '../components/Calendar/EventModal';
 import EventSearch from '../components/Calendar/EventSearch';
 
 export default function Home() {
-  const { showEventModal, eventsData } = useStateContext();
-  
+  const { showEventModal, eventsDatam, token, getEvents, setEvents } = useStateContext();
+
+  useEffect (()=> {
+    setEvents
+    getEvents();
+  }, []);
+
   return (
-    <React.Fragment>
-      {showEventModal && <EventModal />}
-      <EventSearch/>
-      <div id='Calendar'>
+    <div className='homePage'>
+      <div id='Calendar' className="calendarContainer">
         {/* <Sidebar/> */}
         <Calendar/>
       </div>
-    </React.Fragment>
+      {showEventModal && (
+          <div className="eventModalWrapper">
+            <EventModal />
+          </div>
+      )}
+      <EventSearch/>
+    </div>
   );
+  
 }

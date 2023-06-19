@@ -8,6 +8,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Mail\VerificationEmail;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -38,7 +39,6 @@ class UserController extends Controller
 
         //  // Send verification email
         // Mail::to($user->email)->send(new VerificationEmail($user->verification_token));
-
         return response(new UserResource($user), 201);
 
 
