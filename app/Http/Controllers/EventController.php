@@ -17,7 +17,7 @@ class EventController extends Controller
     $publicEvents = Event::where('is_Public', true)->orderBy('id', 'asc')->get();
 
     $privateEvents = Event::where('is_Public', false)
-                          ->where('organiser', auth()->id())
+                          ->where('organiser_id', auth()->id())
                           ->orderBy('id', 'asc')
                           ->get();
 

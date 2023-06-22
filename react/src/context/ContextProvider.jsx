@@ -26,11 +26,14 @@ const StateContext = createContext(
         setNotification: () => {},
         getTags: () => {},
         verifyEmail: null,
-        setVerifyEmail: () => {}
+        setVerifyEmail: () => {},
+        openModal: null,
+        setOpenModal: () => {}
     }
 )
 
 export const ContextProvider = ({children}) => {
+    const [openModal, setOpenModal] = useState(false);
     const [user, setUser] = useState({});
     const [tags, setTags] = useState([]);
     const [verifyEmail, setVerifyEmail] = useState(false);
@@ -65,7 +68,6 @@ export const ContextProvider = ({children}) => {
           _setNotification('')
         }, 5000)
 
-        console.log(message)
       }
 
     const setToken = (token) => {
@@ -140,7 +142,9 @@ export const ContextProvider = ({children}) => {
             getTags,
             tags,
             verifyEmail,
-            setVerifyEmail
+            setVerifyEmail,
+            openModal,
+            setOpenModal
         }}>
             {children}
         </StateContext.Provider>

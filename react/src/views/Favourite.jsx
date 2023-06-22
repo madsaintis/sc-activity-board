@@ -22,8 +22,14 @@ export default function Favourite() {
     const options = { weekday: 'long', day: 'numeric', month: 'long' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
+
+  function formatTime(timeString) {
+    const date = new Date(`2000-01-01 ${timeString}`); // Use a dummy date to parse the time
+    return (date.toLocaleTimeString([], { timeStyle: 'short' })).toUpperCase(); // Format as 12-hour time
+  }
+
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', margin: '0 16px' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', margin: '0 16px', padding: '20px' }}>
       <div style={{ maxWidth: '800px', width: '100%' }}>
         <h1>Favourite Events</h1>
         {sortedEvents.map((event, index) => {
@@ -54,11 +60,17 @@ export default function Favourite() {
                       </div>
                     )}
                     <div>
-                      <Typography variant="h5" component="div">
+                      <Typography variant="h5" component="div" fontWeight={'bold'}>
                         {event.title}
                       </Typography>
+                      <Typography variant="body2" color="blue">
+                        Start Time: {formatTime(event.start_time)}
+                      </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        Start Time: {event.start_time}
+                        {event.location}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {event.organiser_id}
                       </Typography>
                     </div>
                   </div>

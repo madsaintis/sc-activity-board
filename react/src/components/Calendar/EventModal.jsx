@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   faTimesCircle,
   faTrash,
@@ -9,9 +9,33 @@ import { useStateContext } from "../../context/ContextProvider";
 import { useRef } from "react";
 import axiosClient from "../../axios-client";
 import LabelField from "./LabelField";
-import { Button, IconButton } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  FormControl,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  ListSubheader,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
 import ModalImage from "react-modal-image";
+import { Search, Description, LocationOn, Sell, Title, Schedule } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
+import TestSearch from "./TestSearch";
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import dayjs from 'dayjs';
+import { useEffect } from "react";
+
+const containsText = (text, searchText) =>
+  text.toLowerCase().indexOf(searchText.toLowerCase()) > -1;
+
+const allOptions = ["Option One", "Option Two", "Option Three", "Option Four"];
 
 export default function EventModal() {
   const titleRef = useRef();
@@ -19,7 +43,14 @@ export default function EventModal() {
   const descriptionRef = useRef();
   const startTimeRef = useRef();
   const endTimeRef = useRef();
-
+  
+  const [errors, setErrors] = useState(null);
+  const [searchText, setSearchText] = useState("");
+  const displayedOptions = useMemo(
+    () => allOptions.filter((option) => containsText(option, searchText)),
+    [searchText]
+  );
+  
   const {
     setShowEventModal,
     selectedEvent,
@@ -29,6 +60,8 @@ export default function EventModal() {
     getEvents,
     setSelectedDate,
     setNotification,
+    openModal,
+    setOpenModal
   } = useStateContext();
 
   const [title, setTitle] = useState(
@@ -41,10 +74,10 @@ export default function EventModal() {
     selectedEvent ? selectedEvent.event.extendedProps.location : ""
   );
   const [startTime, setStartTime] = useState(
-    selectedEvent ? selectedEvent.event.extendedProps.startTime : ""
+    selectedEvent ? dayjs(selectedEvent.event.extendedProps.startTime) : null
   );
   const [endTime, setEndTime] = useState(
-    selectedEvent ? selectedEvent.event.extendedProps.endTime : ""
+    selectedEvent ? dayjs(selectedEvent.event.extendedProps.endTime) : null
   );
 
   const [image, setImage] = useState(
@@ -61,19 +94,44 @@ export default function EventModal() {
     selectedEvent ? selectedEvent.event.extendedProps.isPublic : false
   );
 
-  const defaultCategories =
-    selectedEvent?.event?.extendedProps?.categories?.map((category) => ({
-      value: String(category.category_id),
-      label: category.category_name,
-    }));
-
-  const [label, setLabel] = useState(selectedEvent ? defaultCategories : []);
-
-  const [isStarred, setIsStarred] = useState(selectedEvent ? selectedEvent.event.extendedProps.isFavourite : false);
+  const [selectedOption, setSelectedOption] = useState(selectedEvent ? selectedEvent.event.extendedProps.categories.map(category => ({
+    tag_id: category.tag_id,
+    tag_name: category.tag_name
+  })) : []);
   
-  console.log(selectedEvent)
+  const [isStarred, setIsStarred] = useState(
+    selectedEvent ? selectedEvent.event.extendedProps.isFavourite : false
+  );
+
+  // useEffect(() => {
+
+  //   setTitle(selectedEvent ? selectedEvent.event.title : "");
+  //   setDescription(selectedEvent ? selectedEvent.event.extendedProps.description : "");
+  //   setLocation(selectedEvent ? selectedEvent.event.extendedProps.location : "");
+  //   setStartTime(selectedEvent ? selectedEvent.event.extendedProps.startTime : "");
+  //   setEndTime(selectedEvent ? selectedEvent.event.extendedProps.endTime : "");
+  //   setImage(selectedEvent ? selectedEvent.event.extendedProps.image : null);
+  //   setChanged(false);
+  //   setIsPublic(selectedEvent ? selectedEvent.event.extendedProps.isPublic : false);
+  //   setSelectedOption(
+  //     selectedEvent
+  //       ? selectedEvent.event.extendedProps.categories.map((category) => ({
+  //           tag_id: category.tag_id,
+  //           tag_name: category.tag_name,
+  //         }))
+  //       : []
+  //   );
+  //   setIsStarred(selectedEvent ? selectedEvent.event.extendedProps.isFavourite : false);
+  // }, [selectedEvent]);
+  
+
   // End of Variable Declaration
   // -------------------------------------------------------------------------------------/
+
+    const handleCloseModal = () => {
+      setOpenModal(false);
+      setSelectedEvent(null);
+    }
 
   const addToFavorites = () => {
     const favoriteData = {
@@ -85,7 +143,7 @@ export default function EventModal() {
       .post("/favourites", favoriteData)
       .then((response) => {
         // Add any necessary logic here
-        console.log("Event added to favorites");
+        setNotification("Event added to favorites");
       })
       .catch((error) => {
         console.log(error);
@@ -93,12 +151,11 @@ export default function EventModal() {
   };
 
   const removeFromFavorites = () => {
-    console.log("HELLO");
     axiosClient
       .delete(`/favourites/${user.id}/${selectedEvent.event.id}`)
       .then((response) => {
         // Add any necessary logic here
-        console.log("Event removed from favorites");
+        setNotification("Event removed from favorites");
       })
       .catch((error) => {
         console.log(error);
@@ -128,7 +185,8 @@ export default function EventModal() {
 
   // Check labels of event
   const handleLabelChange = (selectedOption) => {
-    setLabel(selectedOption);
+
+    setSelectedOption(selectedOption);
   };
 
   // Check if event is public or not
@@ -156,15 +214,15 @@ export default function EventModal() {
   // Event Creation Function
   const onSubmit = (event) => {
     event.preventDefault();
-
+    console.log(selectedOption)
     const formData = new FormData();
     formData.append("title", titleRef.current.value);
     formData.append("location", LocationRef.current.value);
     formData.append("description", descriptionRef.current.value);
-    formData.append("start_time", startTimeRef.current.value);
-    formData.append("end_time", endTimeRef.current.value);
+    formData.append("start_time", startTime.toISOString());
+    formData.append("end_time", endTime.toISOString());
     formData.append("date", selectedDate.toISOString());
-    formData.append("organiser", user.id);
+    formData.append("organiser_id", user.id);
     formData.append("is_public", isPublic ? "1" : "0");
 
     if (image) {
@@ -172,8 +230,9 @@ export default function EventModal() {
       formData.append("poster", image);
     }
 
-    label.forEach((option) => {
-      formData.append("categories[]", option.value);
+    selectedOption.forEach((option) => {
+      
+      formData.append("categories[]", option.tag_id);
     });
 
     const config = {
@@ -187,10 +246,15 @@ export default function EventModal() {
       .then((response) => {
         getEvents();
         setNotification("Event created successfully");
-        setShowEventModal(null);
+        handleCloseModal();
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(err => {
+        const response = err.response;
+        if (response && response.status === 422) {
+          setErrors(response.data.errors);
+        } else {
+          setErrors("An error occurred while creating event. Please try again.");
+        }
       });
   };
 
@@ -203,10 +267,10 @@ export default function EventModal() {
     formData.append("title", titleRef.current.value);
     formData.append("location", LocationRef.current.value);
     formData.append("description", descriptionRef.current.value);
-    formData.append("start_time", startTimeRef.current.value);
-    formData.append("end_time", endTimeRef.current.value);
+    formData.append("start_time", startTime.toISOString());
+    formData.append("end_time", endTime.toISOString());
     formData.append("date", selectedDate);
-    formData.append("organiser", user.id);
+    formData.append("organiser_id", user.id);
     formData.append("is_public", isPublic ? "1" : "0");
     formData.append("changed", changed);
 
@@ -215,9 +279,11 @@ export default function EventModal() {
       if (image) formData.append("poster", image);
     }
 
-    label.forEach((option) => {
-      formData.append("categories[]", option.value);
+    selectedOption.forEach((option) => {
+      formData.append("categories[]", option.tag_id);
     });
+
+    
 
     const config = {
       headers: {
@@ -230,10 +296,14 @@ export default function EventModal() {
       .then((response) => {
         setNotification("Event edited successfully.");
         getEvents();
-        setShowEventModal(null);
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(err => {
+        const response = err.response;
+        console.log("woi")
+        console.log(response)
+        if (response && response.status === 422) {
+          setErrors(response.data.errors);
+        }
       });
   };
 
@@ -252,10 +322,24 @@ export default function EventModal() {
   };
 
   return (
-    <div className="EventModal animated fadeInDown">
-      <div className="EventCreationScreen">
+    <Modal open={openModal}
+    onClose={handleCloseModal}
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      outline: 0
+    }}
+    >
+      <Box sx={{
+            width: "50%", // Customize the width as needed
+            bgcolor: "background.paper",
+            alignItems: "center",
+      justifyContent: "center",
+            p: 2,
+          }}>
         <form onSubmit={onSubmit}>
-          {(selectedEvent?.event?.extendedProps.organiser == user.id ||
+          {(selectedEvent?.event?.extendedProps.organiser == user.name ||
             (user.role === "Admin" && selectedEvent)) && (
             <button className="btn-delete" onClick={onDelete}>
               <FontAwesomeIcon icon={faTrash} />
@@ -354,57 +438,144 @@ export default function EventModal() {
             )}
           </div>
 
-          <label>Title</label>
-          <input
-            ref={titleRef}
-            placeholder="Title"
-            defaultValue={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-
-          <label>Location</label>
-          <input
-            ref={LocationRef}
-            placeholder="Location"
-            defaultValue={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-
-          <label>Description</label>
-          <textarea
-            ref={descriptionRef}
-            placeholder="Description"
-            defaultValue={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-
-          <label>Start Time:</label>
-          <input
-            ref={startTimeRef}
-            type="time"
-            id="startTime"
-            defaultValue={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-          />
-
-          <label>End Time:</label>
-          <input
-            ref={endTimeRef}
-            type="time"
-            id="endTime"
-            defaultValue={endTime}
-            onChange={(e) => setEndTime(e.target.value)}
-          />
-
-          <label>Label</label>
-          {selectedEvent ? (
-            <LabelField
-              onLabelChange={handleLabelChange}
-              defaultCategories={defaultCategories}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Title
+              sx={{
+                color: "action.active",
+                mr: 1,
+                my: 0.5,
+                alignSelf: "center",
+              }}
             />
-          ) : (
-            <LabelField onLabelChange={handleLabelChange} />
-          )}
+            <TextField
+              fullWidth
+              inputRef={titleRef}
+              label= "Title"
+              variant="outlined"
+              margin="dense"
+              size="small"
+              defaultValue={title}
+            />
+          </Box>
+
+<Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <LocationOn
+              sx={{
+                color: "action.active",
+                mr: 1,
+                my: 0.5,
+                alignSelf: "center",
+              }}
+            />
+            <TextField
+              fullWidth
+              inputRef={LocationRef}
+              label= "Location"
+              variant="outlined"
+              margin="dense"
+              size="small"
+              defaultValue={location}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Description
+              sx={{
+                color: "action.active",
+                mr: 1,
+                my: 0.5,
+                alignSelf: "center",
+              }}
+            />
+            <TextField
+              fullWidth
+              inputRef={descriptionRef}
+              label= "Description"
+              variant="outlined"
+              margin="dense"
+              size="small"
+              defaultValue={description}
+              multiline
+            />
+          </Box>
+
+          <Box
+  sx={{
+    display: "flex",
+    flexDirection: "column",
+    mb: 2,
+  }}
+>
+<Box
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      mr: 1,
+    }}
+  >
+    <Schedule
+      sx={{
+        color: "action.active",
+        mr: 0.5,
+        my: 0,
+      }}
+    />
+    <Typography variant="body1">Schedule Label</Typography>
+  </Box>
+  <TimePicker
+    label="Time 1"
+    value={startTime}
+    onChange={(newValue) => setStartTime(newValue)}
+  />
+  <TimePicker
+    label="Time 2"
+    value={endTime}
+    onChange={(newValue) => {
+      console.log(newValue);
+      setEndTime(newValue);
+    }}
+    sx={{ mt: 1 }}
+  />
+</Box>
+
+
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Sell
+              sx={{
+                color: "action.active",
+                mr: 1,
+                my: 0.5,
+                alignSelf: "center",
+              }}
+            />
+            <TestSearch onLabelChange={handleLabelChange}
+              defaultCategories={selectedOption}/>
+          </Box>
+
 
           <label>Visibility</label>
           <div>
@@ -433,21 +604,17 @@ export default function EventModal() {
 
           {!selectedEvent && <button className="btn btn-block">Create</button>}
 
-          {selectedEvent?.event?.extendedProps.organiser == user.id && (
+          {selectedEvent?.event?.extendedProps.organiser == user.name && (
             <button className="btn btn-block" onClick={onUpdate}>
               Edit
             </button>
           )}
 
-          {/* { errors && <div className='alert'>
-            {  Object.keys(errors).map(key => (
-              <p>{errors[key][0]}</p>
-            )
-            )}
-          </div>
-          } */}
+{errors && <Alert severity="error">{Object.values(errors).map((error, index) => (
+      <div key={index}>{error}</div>
+    ))}</Alert>}
         </form>
-      </div>
-    </div>
+        </Box>
+    </Modal>
   );
 }

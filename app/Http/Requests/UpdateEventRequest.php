@@ -28,7 +28,7 @@ class UpdateEventRequest extends FormRequest
             'start_time' => 'nullable|required',
             'end_time' => 'nullable|required',
             'date' => 'nullable|required',
-            'organiser' => 'nullable|required',
+            'organiser_id' => 'nullable|required',
             'categories' => 'nullable|array|required',
             'is_public' => 'boolean',
             'poster' => [

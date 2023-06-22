@@ -7,12 +7,10 @@ export default function DefaultLayout() {
   const { user, token, setUser, setToken, setID, notification, getTags, getEvents } =
     useStateContext();
 
-    console.log(user);
     if (!token) {
       return <Navigate to="/login" />;
     }
  
-
   const onLogout = (event) => {
     event.preventDefault();
 

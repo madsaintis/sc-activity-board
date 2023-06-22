@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('date');
             $table->string('start_time');
             $table->string('end_time');
-            $table->string('organiser');
+            $table->integer('organiser_id')->unsigned()->references('id')->on('users');
             $table->boolean('is_public');
             $table->binary('poster')->nullable();
             $table->timestamps();

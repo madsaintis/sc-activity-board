@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('event_categories', function (Blueprint $table) {
             $table->integer('event_id')->unsigned()->references('id')->on('events');
-            $table->integer('category_id')->unsigned()->references('category_id')->on('categories');
+            $table->integer('tag_id')->unsigned()->references('tag_id')->on('categories');
         });
     }
 

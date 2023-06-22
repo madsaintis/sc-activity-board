@@ -14,7 +14,7 @@ class EventCategory extends Model
     // Define the fillable fields for mass assignment
     protected $fillable = [
         'event_id',
-        'category_id',
+        'tag_id',
     ];
 
     // Define the relationships
@@ -25,7 +25,7 @@ class EventCategory extends Model
 
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class, 'tag_id');
     }
 
     // Other custom logic or methods related to event_categories table

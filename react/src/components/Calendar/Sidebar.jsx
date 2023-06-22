@@ -27,7 +27,7 @@ export default function Sidebar() {
         initialEventsData.filter((event) =>
           category.every((categoryId) =>
             event.categories.some(
-              (categoryObj) => categoryId === categoryObj.category_id.toString()
+              (categoryObj) => categoryId === categoryObj.tag_id.toString()
             )
           )
         )

@@ -236,11 +236,7 @@ table > tbody > tr > td {
     border-style: double;
 }
 
-.calendar-container {
-    width: 100%;
-    height: 100%;
-  }
-  
+
 
 .animated {
     -webkit-animation-duration: 0.3s;
@@ -332,10 +328,19 @@ table > tbody > tr > td {
 }
 
 
-.weekend {
-    background-color: yellow;
+.past {
+    background-color: rgba(160, 141, 141, 0.288);
+    height: auto;
+  }
+
+  .calendar-container {
+    width: 100%;
+    height: auto;
   }
   
+.event-modal-field {
+    margin: 100px;
+}
 .EventModal {
      position: fixed;
   top: 0;

@@ -14,16 +14,16 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['category_id' => 1, 'category_name' => 'Year 1'],
-            ['category_id' => 2, 'category_name' => 'Year 2'],
-            ['category_id' => 3, 'category_name' => 'Year 3'],
-            ['category_id' => 4, 'category_name' => 'Year 4'],
-            ['category_id' => 5, 'category_name' => 'Postgraduate'],
-            ['category_id' => 6, 'category_name' => 'Academic'],
-            ['category_id' => 7, 'category_name' => 'Career'],
-            ['category_id' => 8, 'category_name' => 'Cultural'],
-            ['category_id' => 9, 'category_name' => 'Examination'],
-            ['category_id' => 10, 'category_name' => 'Sports'],
+            ['tag_id' => 1, 'tag_name' => 'Year 1'],
+            ['tag_id' => 2, 'tag_name' => 'Year 2'],
+            ['tag_id' => 3, 'tag_name' => 'Year 3'],
+            ['tag_id' => 4, 'tag_name' => 'Year 4'],
+            ['tag_id' => 5, 'tag_name' => 'Postgraduate'],
+            ['tag_id' => 6, 'tag_name' => 'Academic'],
+            ['tag_id' => 7, 'tag_name' => 'Career'],
+            ['tag_id' => 8, 'tag_name' => 'Cultural'],
+            ['tag_id' => 9, 'tag_name' => 'Examination'],
+            ['tag_id' => 10, 'tag_name' => 'Sports'],
         ];
 
         DB::table('categories')->insert($categories);

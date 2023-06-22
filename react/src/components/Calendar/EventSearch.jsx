@@ -18,7 +18,6 @@ const EventSearch = () => {
 
  useEffect(() => {
      setSelectedValue(''); // Reset selected value when suggestions change
-     console.log(tags);
  }, [suggestions]);
 
  const handleInputChange = (event, value) => {
@@ -28,7 +27,7 @@ const EventSearch = () => {
       // Filter events based on search term and tags
       const filteredEvents = initialEventsData.filter((event) =>
         event.title.toLowerCase().includes(value.toLowerCase()) ||
-        tags.some(tag => tag.category_name.toLowerCase().includes(value.toLowerCase()))
+        tags.some(tag => tag.tag_name.toLowerCase().includes(value.toLowerCase()))
       );
   
       // Extract up to 3 title suggestions that start with the search term
@@ -39,8 +38,8 @@ const EventSearch = () => {
   
       // Extract up to 3 tag suggestions that start with the search term
       const tagSuggestions = tags
-        .filter(tag => tag.category_name.toLowerCase().startsWith(value.toLowerCase()))
-        .map(tag => ({ type: 'tags', value: tag.category_name , label: `tags: ${tag.category_name}`}))
+        .filter(tag => tag.tag_name.toLowerCase().startsWith(value.toLowerCase()))
+        .map(tag => ({ type: 'tags', value: tag.tag_name , label: `tags: ${tag.tag_name}`}))
         .slice(0, 3);
   
       const eventSuggestions = titleSuggestions.concat(tagSuggestions);
@@ -68,7 +67,7 @@ const EventSearch = () => {
         updatedFilters.some((filter) =>
           event.title.toLowerCase().includes(filter.value.toLowerCase()) ||
           event.categories.some((category) =>
-            category.category_name.toLowerCase().includes(filter.value.toLowerCase())
+            category.tag_name.toLowerCase().includes(filter.value.toLowerCase())
           )
         )
       );
@@ -87,7 +86,7 @@ const EventSearch = () => {
           updatedFilters.some((filter) =>
             event.title.toLowerCase().includes(filter.value.toLowerCase()) ||
             event.categories.some((category) =>
-              category.category_name.toLowerCase().includes(filter.value.toLowerCase())
+              category.tag_name.toLowerCase().includes(filter.value.toLowerCase())
             )
           )
         )
