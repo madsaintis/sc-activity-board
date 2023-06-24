@@ -31,6 +31,7 @@ class EventResource extends JsonResource
             'categories' => $this->categories,
             'poster' => base64_encode($this->poster),
             'isFavourite' => $this->isFavorite($user),
+            'isOrganiser' => $this->organizer->id === $user->id,
             //'created_at' => $this -> created_at -> format('Y-m-d H:i:s'),
         ];
     }

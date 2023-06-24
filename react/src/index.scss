@@ -3,6 +3,7 @@
 * {
     box-sizing: border-box;
 }
+
 html, body, #root, #defaultLayout, #guestLayout {
     min-height: 100vh;
 }
@@ -10,6 +11,8 @@ html, body, #root, #defaultLayout, #guestLayout {
 h1, h2, h3, h4, h5, h6, p {
     margin: 0;
 }
+
+
 
 body {
     font-family: 'Open Sans', sans-serif;
@@ -216,9 +219,9 @@ table > tbody > tr > td {
     background-color: rgba(0, 0, 0, 0.2);
 } */
 
-#defaultLayout .content {
+.content {
     flex: 1;
-    
+    padding-top: 20px;
 }
 
 #defaultLayout header {
@@ -232,8 +235,7 @@ table > tbody > tr > td {
 }
 
 #defaultLayout main {
-    padding: 0;
-    border-style: double;
+    padding-top: 20px;
 }
 
 
@@ -341,7 +343,7 @@ table > tbody > tr > td {
 .event-modal-field {
     margin: 100px;
 }
-.EventModal {
+.EventCreationModal {
      position: fixed;
   top: 0;
   left: 0;
@@ -475,3 +477,38 @@ table > tbody > tr > td {
   button {
     padding: 4px;
   }
+
+  @media (max-width: 767.98px) {
+    .fc .fc-toolbar.fc-header-toolbar {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .fc-header-toolbar .fc-toolbar-chunk {
+        display: block;
+    }
+
+    .fc .fc-button .fc-icon {
+        font-size: 1.2em;
+        vertical-align: middle;
+    }
+
+    .fc .fc-toolbar-title {
+        font-size: 1.3em;
+        margin: 0px;
+      }
+
+    .fc .fc-button {
+        font-size: 0.9em;
+    }
+}
+
+.fc-event {
+    height: 30px !important;
+    overflow: hidden;
+    padding: 3px 3px;
+}
+
+.fc-icon .fc-icon-chevron-left {
+    padding: 0px;
+}

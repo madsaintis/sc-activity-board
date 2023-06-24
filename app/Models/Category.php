@@ -16,6 +16,7 @@ class Category extends Model
     // Define the fillable fields for mass assignment
     protected $fillable = [
         'tag_name',
+        'tag_colour',
     ];
 
     public function events()

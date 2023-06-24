@@ -3,8 +3,12 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from "@fullcalendar/interaction"
 import { useStateContext } from '../../context/ContextProvider';
-import { Box, Modal, Typography } from '@mui/material';
+import { Box, Modal, Typography, useTheme } from '@mui/material';
+import EventCreationModal from './EventCreationModal';
+import timeGridPlugin from '@fullcalendar/timegrid'
+import listPlugin from '@fullcalendar/list';
 import EventModal from './EventModal';
+
 
 const style = {
   position: 'absolute',
@@ -13,22 +17,29 @@ const style = {
   transform: 'translate(-50%, -50%)',
   width: 400,
   bgcolor: 'background.paper',
-  border: '2px solid #000',
   boxShadow: 24,
   p: 4,
 };
 
 export default function Calendar() {
 
-  const { setShowEventModal, setSelectedEvent, setSelectedDate, eventsData, getEvents, getTags, getPrivateEvents, setOpenModal, openModal} = useStateContext();
+  const { user, setShowEventModal, setSelectedEvent, setSelectedDate, eventsData, getEvents, getTags, getPrivateEvents, setOpenCreationModal, openCreationModal, setOpenModal, openModal,theme} = useStateContext();
   const [contentHeight, setContentHeight] = useState(
-    window.innerWidth < 577 ? 600 : 1000
+    window.innerWidth < 577 ? 800 : 1000
   );
-
+  
+  
   const handleEvent = (args) => {
-    setSelectedDate(args.event.start.toISOString())
+    setSelectedDate(args.event.start)
     setSelectedEvent(args);
-    setOpenModal(true);
+
+    if(args.event.extendedProps.organiser == user.name) {
+      setOpenCreationModal(true);
+    }
+
+    else {
+      setOpenModal(true);
+    }
   }
 
   const isPastDate = (date) => {
@@ -52,38 +63,70 @@ function determineDayCellClassNames(date) {
  return (
     <div className='calendar-container'>
       <FullCalendar
-        plugins={[dayGridPlugin, interactionPlugin]}
-        initialView='dayGridMonth'
         
-        events={eventsData.map(event => ({
-          id: event.id,
-          title: event.title,
-          start: event.date,
-          extendedProps: {
-            location: event.location,
-            description: event.description,
-            startTime: event.start_time,
-            endTime: event.end_time,
-            organiser: event.organiser,
-            categories: event.categories,
-            isPublic: event.isPublic,
-            image: event.poster,
-            isFavourite: event.isFavourite
-          }
-        }))}
+        plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin]}
+        initialView='dayGridMonth'
+        handleWindowResize
+        events={eventsData.map(event => {
+  
+          return {
+            id: event.id,
+            title: event.title,
+            start: event.start_time,
+            end: event.end_time,
+            backgroundColor: event.categories[0].tag_colour,
+            extendedProps: {
+              location: event.location,
+              description: event.description,
+              startTime: event.start_time,
+              endTime: event.end_time,
+              organiser: event.organiser,
+              categories: event.categories,
+              isPublic: event.isPublic,
+              image: event.poster,
+              isFavourite: event.isFavourite
+            }
+          };
+        })}
         dateClick={(args) => {
           if (!isPastDate(args.date)) {
             setSelectedDate(args.date);
-            setOpenModal(true);
+            setOpenCreationModal(true);
           }
         }}
+
         fixedWeekCount={false}
         eventClick={handleEvent}
-        displayEventTime={false}
         contentHeight={contentHeight}
+        displayEventTime={true}
+        headerToolbar={{
+          left: 'prev,next',
+          center: 'title',
+          right: 'dayGridMonth,listWeek' // user can switch between the two
+        }}
         dayCellClassNames={determineDayCellClassNames}
+        eventDisplay='block'
+        // eventTimeFormat={{
+        //   hour: '2-digit',
+        //   minute: '2-digit',
+        //   meridiem: true,
+        // }}
+        eventContent={(eventInfo) => (
+          <div style={{ fontSize: '14px', padding: '0px 2px' }}>{eventInfo.event.title}</div>
+        )}
+        views={{
+          timeGridWeek: {
+            eventTimeFormat: {
+              hour: '2-digit',
+              minute: '2-digit'
+            }
+          }
+        }}
+        
       />
 
+  {openCreationModal && <EventCreationModal />}
+  
   {openModal && <EventModal />}
   
     </div>

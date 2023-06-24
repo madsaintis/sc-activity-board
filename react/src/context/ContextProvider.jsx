@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import axiosClient from "../axios-client";
+import { useTheme } from "@mui/material";
 
 const StateContext = createContext(
     {
@@ -27,12 +28,15 @@ const StateContext = createContext(
         getTags: () => {},
         verifyEmail: null,
         setVerifyEmail: () => {},
+        openCreationModal: null,
+        setOpenCreationModal: () => {},
         openModal: null,
         setOpenModal: () => {}
     }
 )
 
 export const ContextProvider = ({children}) => {
+    const [openCreationModal, setOpenCreationModal] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [user, setUser] = useState({});
     const [tags, setTags] = useState([]);
@@ -46,20 +50,8 @@ export const ContextProvider = ({children}) => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [label, setLabel] = useState(null);
     const [notification, _setNotification] = useState('');
-    
 
-    const categories = [
-        { value: '1', label: 'Year 1', color: 'red' },
-        { value: '2', label: 'Year 2', color: 'blue' },
-        { value: '3', label: 'Year 3', color: 'green' },
-        { value: '4', label: 'Year 4', color: 'yellow' },
-        { value: '5', label: 'Postgraduate', color: 'orange' },
-        { value: '6', label: 'Academic', color: 'teal' },
-        { value: '7', label: 'Career', color: 'purple' },
-        { value: '8', label: 'Cultural', color: 'brown' },
-        { value: '9', label: 'Examination', color: 'magenta' },
-        { value: '10', label: 'Sports', color: 'pink' },
-    ];
+    const theme = useTheme();
 
     const setNotification = (message) => {
         _setNotification(message);
@@ -87,7 +79,7 @@ export const ContextProvider = ({children}) => {
         .then((response) => {
           const events = response.data.data;
           if (Array.isArray(events)) {
-            const favouritedEvents = events.filter((event) => event.isFavourite);
+            const favouritedEvents = events.filter((event) => event.isFavourite || event.isOrganiser);
             // console.log(favouritedEvents);
             setInitialEvents(events);
             setEvents(events);
@@ -135,7 +127,6 @@ export const ContextProvider = ({children}) => {
             setLabel,
             setEvents,
             initialEventsData,
-            categories,
             setNotification,
             notification,
             favouriteEventsData,
@@ -143,8 +134,11 @@ export const ContextProvider = ({children}) => {
             tags,
             verifyEmail,
             setVerifyEmail,
+            openCreationModal,
+            setOpenCreationModal,
             openModal,
-            setOpenModal
+            setOpenModal,
+            theme
         }}>
             {children}
         </StateContext.Provider>

@@ -4,7 +4,7 @@ import { Link, Navigate, Outlet } from "react-router-dom";
 import axiosClient from "../axios-client";
 
 export default function DefaultLayout() {
-  const { user, token, setUser, setToken, setID, notification, getTags, getEvents } =
+  const { user, token, setUser, setToken, setID, notification, getTags, getEvents, setEvents } =
     useStateContext();
 
     if (!token) {
@@ -15,9 +15,11 @@ export default function DefaultLayout() {
     event.preventDefault();
 
     axiosClient.post("/logout").then(() => {
+      setEvents([]);
       setUser({});
       setToken(null);
     });
+
   };
 
   useEffect(() => {
@@ -30,6 +32,8 @@ export default function DefaultLayout() {
     });
 
     getTags();
+    getEvents();
+
   }, []);
 
 

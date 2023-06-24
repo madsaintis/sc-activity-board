@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->increments('tag_id');
-            $table->string('tag_name', 255)->unique();
+            $table->string('tag_name', 255);
+            $table->string('tag_colour', 100);
         });
     }
 

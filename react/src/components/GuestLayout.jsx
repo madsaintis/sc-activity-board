@@ -8,7 +8,7 @@ export default function GuestLayout() {
   
   if(token) {
 
-    if(!user.email_verified_at){
+    if(user && !user.email_verified_at){
     return <Navigate to="/verify-pending" /> }
     
     return <Navigate to="/home" />

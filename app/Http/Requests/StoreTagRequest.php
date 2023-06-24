@@ -22,7 +22,8 @@ class StoreTagRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tag_name' => 'nullable|required',
+            'tag_name' => 'nullable | required',
+            'tag_colour' => 'nullable|required'
             //
         ];
     }
