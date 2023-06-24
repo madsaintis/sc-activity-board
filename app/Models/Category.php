@@ -9,16 +9,18 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'category_id';
+    protected $primaryKey = 'tag_id';
     public $incrementing = false;
+    public $timestamps = false;
 
     // Define the fillable fields for mass assignment
     protected $fillable = [
-        'category_name',
+        'tag_name',
+        'tag_colour',
     ];
 
     public function events()
     {
-        return $this->belongsToMany(Event::class, 'event_categories', 'category_id', 'event_id');
+        return $this->belongsToMany(Event::class, 'event_categories', 'tag_id', 'event_id');
     }
 }

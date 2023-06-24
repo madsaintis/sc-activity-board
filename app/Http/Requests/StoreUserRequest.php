@@ -29,9 +29,10 @@ class StoreUserRequest extends FormRequest
             'password' => [
                 'required',
                 'confirmed',
-                Password::min(8)->letters()
-            ]
-
+                'min:8',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'
+            ],
+            'password.regex' => 'The password must contain at least one uppercase letter, one lowercase letter, and one number.'
         ];
     }
 }

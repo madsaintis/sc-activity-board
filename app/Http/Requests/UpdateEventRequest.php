@@ -11,7 +11,7 @@ class UpdateEventRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,22 @@ class UpdateEventRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'nullable|required',
+            'description' => 'nullable|required',
+            'location' => 'nullable|required',
+            'start_time' => 'nullable|required',
+            'end_time' => 'nullable|required',
+            'date' => 'nullable|required',
+            'organiser_id' => 'nullable|required',
+            'categories' => 'nullable|array|required',
+            'is_public' => 'boolean',
+            'poster' => [
+                'sometimes',
+                'nullable',
+                'image', // Validates that the file is an image
+                'mimes:jpeg,png', // Specifies the allowed image MIME types
+                'max:2048', // Specifies the maximum file size in kilobytes (2MB in this example)
+            ],
         ];
     }
 }

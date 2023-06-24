@@ -28,9 +28,15 @@ class StoreEventRequest extends FormRequest
             'start_time' => 'nullable|required',
             'end_time' => 'nullable|required',
             'date' => 'nullable|required',
-            'organiser' => 'nullable|required',
+            'organiser_id' => 'nullable|required',
             'categories' => 'nullable|array|required',
-            
+            'is_public' => 'boolean',
+            'poster' => [
+                'nullable',
+                'image', // Validates that the file is an image
+                'mimes:jpeg,png', // Specifies the allowed image MIME types
+                'max:2048', // Specifies the maximum file size in kilobytes (2MB in this example)
+            ],
         ];
     }
 }

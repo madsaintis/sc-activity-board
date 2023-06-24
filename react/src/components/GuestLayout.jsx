@@ -7,7 +7,11 @@ export default function GuestLayout() {
   const {user, token} = useStateContext()
   
   if(token) {
-    return <Navigate to="/" />
+
+    if(user && !user.email_verified_at){
+    return <Navigate to="/verify-pending" /> }
+    
+    return <Navigate to="/home" />
   }
 
   return (

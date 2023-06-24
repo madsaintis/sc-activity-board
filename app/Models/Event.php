@@ -16,11 +16,23 @@ class Event extends Model
         'start_time', 
         'end_time',
         'date',
-        'organiser'
+        'organiser_id',
+        'is_public',
+        'poster'
     ];
 
     public function categories()
     {
-        return $this->belongsToMany(Category::class, 'event_categories', 'event_id', 'category_id');
+        return $this->belongsToMany(Category::class, 'event_categories', 'event_id', 'tag_id');
+    }
+
+    public function favouritedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'favourites', 'event_id', 'user_id');
+    }
+
+    public function organizer()
+    {
+        return $this->belongsTo(User::class, 'organiser_id', 'id');
     }
 }

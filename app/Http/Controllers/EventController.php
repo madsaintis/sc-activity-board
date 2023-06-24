@@ -13,9 +13,18 @@ class EventController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        return EventResource::collection(Event::query()->orderBy('id', 'asc')->paginate());
-    }
+{
+    $publicEvents = Event::where('is_Public', true)->orderBy('id', 'asc')->get();
+
+    $privateEvents = Event::where('is_Public', false)
+                          ->where('organiser_id', auth()->id())
+                          ->orderBy('id', 'asc')
+                          ->get();
+
+    $events = $publicEvents->concat($privateEvents);
+
+    return EventResource::collection($events);
+}
 
     /**
      * Store a newly created resource in storage.
@@ -34,6 +43,12 @@ class EventController extends Controller
     public function store(StoreEventRequest $request)
 {
     $data = $request->validated();
+
+    // Handle poster upload
+    if ($request->hasFile('poster')) {
+        $poster = $request->file('poster');
+        $data['poster'] = file_get_contents($poster);
+    }
 
     $event = Event::create($data);
     
@@ -57,11 +72,37 @@ class EventController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEventRequest $request, Event $event)
-    {
-        $data = $request -> validated();
-        $event->update($data);
+   public function update(UpdateEventRequest $request, Event $event)
+{
+    $data = $request->validated();
+
+    // Check the 'changed' value from the request
+    $changed = $request->input('changed') === 'true';
+
+    // Handle poster upload if the image file has changed
+    if ($changed && $request->hasFile('poster')) {
+        $poster = $request->file('poster');
+        $data['poster'] = file_get_contents($poster);
+    } elseif ($changed) {
+        // If the 'changed' value is 'true' but no new poster file provided,
+        // you can perform any other necessary actions here
+        // ...
+        $data['poster'] = null;
     }
+
+    // Update the event data
+    $event->update($data);
+
+    // Update the selected category IDs
+    if (isset($data['categories']) && is_array($data['categories'])) {
+        $event->categories()->sync($data['categories']);
+    } else {
+        // If no categories are provided, detach all categories
+        $event->categories()->detach();
+    }
+
+    return response(new EventResource($event), 201);
+}
 
     /**
      * Remove the specified resource from storage.
@@ -73,4 +114,5 @@ class EventController extends Controller
         $event -> delete();
         return response("", 204);
     }
+
 }

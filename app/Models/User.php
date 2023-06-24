@@ -3,12 +3,14 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -21,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role'
     ];
 
     /**
@@ -41,4 +44,26 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function favourites()
+    {
+        return $this->hasMany(Favourite::class);
+    }
+
+        public function events()
+    {
+        return $this->hasMany(Event::class, 'organiser_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Define the cascading delete behavior
+        static::deleting(function ($user) {
+            $user->events()->delete();
+        });
+    }
+
+
 }
