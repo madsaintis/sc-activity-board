@@ -33,7 +33,7 @@ const tagColourChoice = [
   { label: 'Cosmos', value: '#481620' },
 ];
 
-export default function TestSearch(props) {
+export default function TagSearch(props) {
   const { defaultCategories } = props;
   const { tags, getTags } = useStateContext();
   const [value, setValue] = useState([]);

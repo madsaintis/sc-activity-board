@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useStateContext } from "../context/ContextProvider";
 import { Link, Navigate, Outlet } from "react-router-dom";
 import axiosClient from "../axios-client";
+import Header from "./ApplicationBar";
 
 export default function DefaultLayout() {
   const { user, token, setUser, setToken, setID, notification, getTags, getEvents, setEvents } =
@@ -30,7 +31,7 @@ export default function DefaultLayout() {
         return <Navigate to="/verify-pending" />
       }
     });
-
+    console.log(user.role)
     getTags();
     getEvents();
 
@@ -40,7 +41,7 @@ export default function DefaultLayout() {
   return (
     <div id="defaultLayout">
       <div className="content">
-        <header>
+        {/* <header>
           <Link to="/home">Home</Link>
           <Link to="/favourite">Favourite</Link>
           {user.role == "Admin" && <Link to="/Users">User</Link>}
@@ -53,7 +54,8 @@ export default function DefaultLayout() {
               Logout
             </a>
           </div>
-        </header>
+        </header> */}
+        <Header />
 
         <main>
           <Outlet />

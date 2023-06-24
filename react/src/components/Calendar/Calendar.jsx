@@ -28,7 +28,6 @@ export default function Calendar() {
     window.innerWidth < 577 ? 800 : 1000
   );
   
-  
   const handleEvent = (args) => {
     setSelectedDate(args.event.start)
     setSelectedEvent(args);
@@ -66,7 +65,6 @@ function determineDayCellClassNames(date) {
         
         plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin]}
         initialView='dayGridMonth'
-        handleWindowResize
         events={eventsData.map(event => {
   
           return {
@@ -122,6 +120,7 @@ function determineDayCellClassNames(date) {
             }
           }
         }}
+        
         
       />
 

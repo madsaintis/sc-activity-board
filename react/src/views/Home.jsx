@@ -14,6 +14,7 @@ export default function Home() {
 
   return (
     <div className='homePage'>
+            <EventSearch />
       <div id='Calendar' className="calendarContainer">
         {/* <Sidebar/> */}
         <Calendar />
@@ -23,7 +24,6 @@ export default function Home() {
           <EventCreationModal />
         </div>
       )}
-      <EventSearch />
     </div>
   );
 

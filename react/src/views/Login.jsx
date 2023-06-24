@@ -50,6 +50,10 @@ export default function Login() {
     <div className='login-signup-form animated fadeInDown'>
       <div className='form'>
         <form onSubmit={onSubmit}>
+        <h1 className='title'>
+            SC ACTIVITY BOARD
+          </h1>
+          -----------------------------------------------------------
           <h1 className='title'>
             Login into your account
           </h1>

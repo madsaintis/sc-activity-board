@@ -6,12 +6,14 @@ import { Card, CardContent, Typography } from '@mui/material';
 import EventModal from '../components/Calendar/EventModal';
 import EventCreationModal from '../components/Calendar/EventCreationModal';
 import RenderGroup from '../components/Calendar/RenderGroup';
+import EventSearch from '../components/Calendar/EventSearch';
+import EventSearchFavourite from '../components/Calendar/EventSearchFavourite';
+import { Sell } from '@mui/icons-material';
 
 export default function Favourite() {
   const { user, setShowEventModal, setSelectedEvent, setSelectedDate, eventsData, getEvents, getTags, getPrivateEvents, setOpenCreationModal, openCreationModal, setOpenModal, openModal,theme, favouriteEventsData} = useStateContext();
   const options = { hour: 'numeric', minute: 'numeric', hour12: true };
 
-  console.log(favouriteEventsData)
   // Sort events by date
   const sortedEvents = [...favouriteEventsData].sort((a, b) => {
     const dateA = new Date(a.date);
@@ -63,9 +65,12 @@ export default function Favourite() {
 
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', margin: '0 16px', padding: '20px' }}>
+    
+    <div style={{ display: 'flex', justifyContent: 'center', margin: '0 16px', padding: '10px' }}>
+      
       <div style={{ maxWidth: '800px', width: '100%' }}>
-        <h1>Favourite Events</h1> <RenderGroup />
+      <EventSearchFavourite />
+        <h1>My Events</h1> 
         {sortedEvents.map((event, index) => {
           const currentDate = formatDate(event.date);
           let previousDate = null;
@@ -75,41 +80,50 @@ export default function Favourite() {
           }
 
           return (
-            <div key={event.id}>
+            <div key={event.id} style={{ marginBottom: '20px' }}>
               {index === 0 || currentDate !== previousDate ? (
-                <Typography variant="h5" component="div">
+                <Typography variant="h5" component="div" style={{ marginBottom: '10px' }}>
                   {currentDate}
                 </Typography>
               ) : null}
               <Link
                 to="#"
-                style={{ textDecoration: 'none' }}
+                style={{ textDecoration: 'none', display: 'block' }}
                 onClick={() => handleEvent(event)}
               >
-                <Card className="event-card">
+                <Card className="event-card" style={{ marginBottom: '10px' }}>
                   <CardContent>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                      {event.poster && (
-                        <div style={{ marginRight: '16px' }}>
-                          <img
-                            src={`data:image/jpeg;base64,${event.poster}`}
-                            alt="Event Poster"
-                            style={{ width: '100px' }}
-                          />
-                        </div>
-                      )}
+                    {event.poster ? (
+  <div style={{ marginRight: '16px' }}>
+    <img
+      src={`data:image/jpeg;base64,${event.poster}`}
+      alt="Event Poster"
+      style={{ width: '100px' }}
+    />
+  </div>
+) : (
+  <div style={{ marginRight: '16px' }}>
+    <img
+      src="https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
+      alt="No Event Poster"
+      style={{ width: '100px' }}
+    />
+  </div>
+)}
+
                       <div>
                         <Typography variant="h5" component="div" fontWeight={'bold'}>
                           {event.title}
                         </Typography>
                         <Typography variant="body2" color="blue">
-                          Start Time: {new Date(event.start_time).toLocaleTimeString(undefined, options)}
+                          {new Date(event.start_time).toLocaleTimeString(undefined, options)} - {new Date(event.end_time).toLocaleTimeString(undefined, options)}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {event.location}
+                        <Typography variant="body2" color="black">
+                          Location: {event.location}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {event.organiser_id}
+                        <Typography variant="h8" color="black">
+                          by: {event.organiser}
                         </Typography>
                       </div>
                     </div>
@@ -118,6 +132,7 @@ export default function Favourite() {
               </Link>
             </div>
           );
+          
           
         })}
       </div>

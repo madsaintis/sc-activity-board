@@ -9,11 +9,14 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { createTheme, ThemeProvider } from '@mui/material'
 
 const theme = createTheme({
+  typography: {
+    fontFamily: 'Roboto, sans-serif'
+  },
   palette: {
     primary: {
-      
-      main: '#F7567C' // Set your primary color here
+      main: '#F7567C', // Set your primary color here
     },
+
     secondary: {
       main: '#5d576b', // Set your secondary color here
     },

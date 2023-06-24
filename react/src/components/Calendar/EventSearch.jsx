@@ -211,6 +211,7 @@ export default function EventSearch() {
 
   return (
     <Autocomplete
+    sx={{padding: 1}}
       multiple
       limitTags={2}
       id="multiple-limit-tags"
@@ -224,7 +225,7 @@ export default function EventSearch() {
       }}
       onChange={handleOptionChange}
       isOptionEqualToValue={isOptionEqualToValue}
-      renderInput={(params) => <TextField {...params} label="limitTags" placeholder="Favorites" />}
+      renderInput={(params) => <TextField {...params} label="Event Filter"/>}
       
     />
   );

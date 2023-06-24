@@ -2,6 +2,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axiosClient from "../axios-client.js";
 import { useStateContext } from "../context/ContextProvider.jsx";
+import { Checkbox, FormControlLabel, IconButton } from "@mui/material";
+import { ArrowBack, CheckBox } from "@mui/icons-material";
 
 export default function UserForm() {
   const navigate = useNavigate();
@@ -13,6 +15,7 @@ export default function UserForm() {
     role: "",
     password: "",
     password_confirmation: "",
+    role: ""
   });
   const [errors, setErrors] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -33,9 +36,9 @@ export default function UserForm() {
     }, []);
   }
 
+  console.log(user)
   const onSubmit = (ev) => {
     ev.preventDefault();
-    if (user.id) {
       axiosClient
         .put(`/users/${user.id}`, user)
         .then(() => {
@@ -48,63 +51,76 @@ export default function UserForm() {
             setErrors(response.data.errors);
           }
         });
-    } else {
-      axiosClient
-        .post("/users", user)
-        .then(() => {
-          setNotification("User was successfully created");
-          navigate("/users");
-        })
-        .catch((err) => {
-          const response = err.response;
-          if (response && response.status === 422) {
-            setErrors(response.data.errors);
-          }
-        });
-    }
-  };
+    } ;
+
+
+  const goBack = () => {
+    navigate("/users");
+  }
 
   return (
-    <>
-      {user.id && <h1>Update User: {user.name}</h1>}
-      {!user.id && <h1>New User</h1>}
-      <div className="card animated fadeInDown">
-        {loading && <div className="text-center">Loading...</div>}
-        {errors && (
-          <div className="alert">
-            {Object.keys(errors).map((key) => (
-              <p key={key}>{errors[key][0]}</p>
-            ))}
-          </div>
-        )}
-        {!loading && (
-          <form onSubmit={onSubmit}>
-            <input
-              value={user.name}
-              onChange={(ev) => setUser({ ...user, name: ev.target.value })}
-              placeholder="Name"
-            />
-            <input
-              value={user.email}
-              onChange={(ev) => setUser({ ...user, email: ev.target.value })}
-              placeholder="Email"
-            />
-            <input
-              type="password"
-              onChange={(ev) => setUser({ ...user, password: ev.target.value })}
-              placeholder="Password"
-            />
-            <input
-              type="password"
-              onChange={(ev) =>
-                setUser({ ...user, password_confirmation: ev.target.value })
-              }
-              placeholder="Password Confirmation"
-            />
-            <button className="btn">Save</button>
-          </form>
-        )}
-      </div>
-    </>
+<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100vh'}}>
+<div >
+  <div style={{ display: 'flex', alignItems: 'center' }}>
+  <IconButton onClick={goBack} style={{ marginRight: '10px' }}>
+        <ArrowBack />
+      </IconButton>
+    {user.id && <h1 style={{ marginLeft: '10px' }}>Update User: {user.name}</h1>}
+    
+  </div>
+</div>
+
+<div className="card animated fadeInDown">
+  {loading && <div className="text-center">Loading...</div>}
+  {errors && (
+    <div className="alert">
+      {Object.keys(errors).map((key) => (
+        <p key={key}>{errors[key][0]}</p>
+      ))}
+    </div>
+  )}
+  {!loading && (
+    <form onSubmit={onSubmit}>
+      <input
+        value={user.name}
+        onChange={(ev) => setUser({ ...user, name: ev.target.value })}
+        placeholder="Name"
+      />
+      <input
+        value={user.email}
+        onChange={(ev) => setUser({ ...user, email: ev.target.value })}
+        placeholder="Email"
+      />
+      <input
+        type="password"
+        onChange={(ev) => setUser({ ...user, password: ev.target.value })}
+        placeholder="Password"
+      />
+      <input
+        type="password"
+        onChange={(ev) =>
+          setUser({ ...user, password_confirmation: ev.target.value })
+        }
+        placeholder="Password Confirmation"
+      />
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={user.role === 'Event Organiser'}
+                onChange={(ev) =>
+                  setUser({ ...user, role: ev.target.checked ? 'Event Organiser' : 'Event Participant' })}
+              />
+            }
+            label="User is an event organiser"
+            style={{ marginLeft: '15px' }}
+          />
+        </div>
+      <button className="btn">Save</button>
+    </form>
+  )}
+</div>
+</div>
+
   );
 }

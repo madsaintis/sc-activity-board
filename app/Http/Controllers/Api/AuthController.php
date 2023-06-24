@@ -8,6 +8,7 @@ use App\Http\Requests\SignupRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Str;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -17,10 +18,15 @@ class AuthController extends Controller
 
         $data = $request->validated();
 
+        if (Str::endsWith($data['email'], ['@utm.my', '@graduate.utm.my'])) {
+            $data['role'] = 'Event Organiser';
+        }
+
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
+            'role' => $data['role'] ?? 'Event Participant', // Default role if not set
         ]);
 
         event(new Registered($user));

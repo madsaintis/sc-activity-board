@@ -31,7 +31,9 @@ const StateContext = createContext(
         openCreationModal: null,
         setOpenCreationModal: () => {},
         openModal: null,
-        setOpenModal: () => {}
+        setOpenModal: () => {},
+        setFavouritedEvents: () => {},
+        initialFavouritesEventsData: null
     }
 )
 
@@ -43,6 +45,7 @@ export const ContextProvider = ({children}) => {
     const [verifyEmail, setVerifyEmail] = useState(false);
     const [initialEventsData, setInitialEvents] = useState([]);
     const [eventsData, setEvents] = useState([]);
+    const [initialFavouritedEventsData, setInitialFavouritedEvents] = useState([]);
     const [favouriteEventsData, setFavouritedEvents] = useState([]);
     const [token, _setToken] = useState(localStorage.getItem("ACCESS_TOKEN"));
     const [showEventModal, setShowEventModal] = useState(false);
@@ -83,6 +86,7 @@ export const ContextProvider = ({children}) => {
             // console.log(favouritedEvents);
             setInitialEvents(events);
             setEvents(events);
+            setInitialFavouritedEvents(favouritedEvents);
             setFavouritedEvents(favouritedEvents);
           } else {
             console.log('Response data is not an array:', events);
@@ -138,7 +142,9 @@ export const ContextProvider = ({children}) => {
             setOpenCreationModal,
             openModal,
             setOpenModal,
-            theme
+            theme,
+            setFavouritedEvents,
+            initialFavouritedEventsData
         }}>
             {children}
         </StateContext.Provider>

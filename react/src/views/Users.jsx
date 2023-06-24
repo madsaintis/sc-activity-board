@@ -16,7 +16,7 @@ export default function Users() {
     setLoading(true)
     axiosClient.get('/users').then(({data}) => {
       setLoading(false)
-      setUsers(data.data)
+      setUsers(data.data);
     })
     .catch(() => {
       setLoading(false)
@@ -36,19 +36,19 @@ export default function Users() {
   }
   
    return (
-    <div>
-      <div style={{display: 'flex', justifyContent: "space-between", alignItems: "center"}}>
+    <div style={{ display: 'flex', justifyContent: 'center', height: 'auto' }}>
+      {/* <div style={{display: 'flex', justifyContent: "space-between", alignItems: "center"}}>
         <h1>Users</h1>
         <Link className="btn-add" to="/users/new">Add new</Link>
-      </div>
-      <div className="card animated fadeInDown">
+      </div> */}
+      <div className="card animated fadeInDown" style={{maxWidth:'600px'}}>
         <table>
           <thead>
           <tr>
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>
-            <th>Role</th>
+
             <th>Actions</th>
           </tr>
           </thead>
@@ -68,7 +68,6 @@ export default function Users() {
                 <td>{u.id}</td>
                 <td>{u.name}</td>
                 <td>{u.email}</td>
-                <td>{u.role}</td>
                 <td>
                   <Link className="btn-edit" to={'/users/' + u.id}>Edit</Link>
                   &nbsp;

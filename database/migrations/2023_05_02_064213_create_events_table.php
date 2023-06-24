@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('end_time');
             $table->integer('organiser_id')->unsigned()->references('id')->on('users');
             $table->boolean('is_public');
-            $table->binary('poster')->nullable();
+            $table->mediumBlob('poster')->nullable();
             $table->timestamps();
         });
     }

@@ -4,12 +4,11 @@ import { faTimesCircle, faTrash, faStar } from "@fortawesome/free-solid-svg-icon
 import { useStateContext } from "../../context/ContextProvider";
 import { useRef } from "react";
 import axiosClient from "../../axios-client";
-import LabelField from "./LabelField";
 import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, IconButton, InputAdornment, InputLabel, ListSubheader, MenuItem, Modal, Select, TextField, Typography } from "@mui/material";
 import ModalImage from "react-modal-image";
-import { Search, Description, LocationOn, Sell, Title, Schedule } from "@mui/icons-material";
+import { Search, Description, LocationOn, Sell, Title, Schedule, KeyboardReturn } from "@mui/icons-material";
 import CloseIcon from "@mui/icons-material/Close";
-import TestSearch from "./TestSearch";
+import TagSearch from "./TagSearch";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
 import { useEffect } from "react";
@@ -45,18 +44,16 @@ export default function EventCreationModal() {
   const [isPublic, setIsPublic] = useState(
     selectedEvent ? (selectedEvent.event.extendedProps.isPublic === 1 ? true : false) : false
   );
-  
+
   const [selectedOption, setSelectedOption] = useState(
     selectedEvent
       ? selectedEvent.event.extendedProps.categories.map((category) => ({
         tag_id: category.tag_id,
         tag_name: category.tag_name,
         tag_colour: category.tag_colour
-        }))
+      }))
       : []
   );
-
-  // const [isStarred, setIsStarred] = useState(selectedEvent ? selectedEvent.event.extendedProps.isFavourite : false);
 
   // End of Variable Declaration
   // -------------------------------------------------------------------------------------/
@@ -65,35 +62,6 @@ export default function EventCreationModal() {
     setOpenCreationModal(false);
     setSelectedEvent(null);
   };
-
-  // const addToFavorites = () => {
-  //   const favoriteData = {
-  //     userId: user.id,
-  //     eventId: selectedEvent.event.id,
-  //   };
-
-  //   axiosClient
-  //     .post("/favourites", favoriteData)
-  //     .then((response) => {
-  //       // Add any necessary logic here
-  //       setNotification("Event added to favorites");
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // };
-
-  // const removeFromFavorites = () => {
-  //   axiosClient
-  //     .delete(`/favourites/${user.id}/${selectedEvent.event.id}`)
-  //     .then((response) => {
-  //       // Add any necessary logic here
-  //       setNotification("Event removed from favorites");
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // };
 
   // Image Upload Function
   const handleImageUpload = (event) => {
@@ -120,18 +88,6 @@ export default function EventCreationModal() {
   const handleLabelChange = (selectedOption) => {
     setSelectedOption(selectedOption);
   };
-
-  // // Handle star button click
-  // const handleStarClick = () => {
-  //   setIsStarred((prevIsStarred) => !prevIsStarred);
-  //   if (!isStarred) {
-  //     addToFavorites();
-  //   } else {
-  //     removeFromFavorites();
-  //   }
-
-  //   getEvents();
-  // };
 
   // Reformat start and end time
   const reformatDate = (date1, date2) => {
@@ -274,10 +230,9 @@ export default function EventCreationModal() {
         alignItems: "center",
         justifyContent: "center",
         outline: 0,
-        
       }}
     >
-      <Box
+      <Box className="modal"
         sx={{
           width: "auto",
           maxWidth: "90%",
@@ -291,43 +246,52 @@ export default function EventCreationModal() {
         }}
       >
         <form onSubmit={onSubmit}>
-          {(selectedEvent?.event?.extendedProps.organiser === user.name || (user.role === "Admin" && selectedEvent)) && (
-            <button className="btn-delete" onClick={onDelete}>
-              <FontAwesomeIcon icon={faTrash} />
-            </button>
-          )}
-          <button
-            className="btn-close"
-            onClick={() => {
-              setOpenCreationModal(false);
-              setSelectedEvent(null);
-              setSelectedDate(null);
-            }}
-          >
-            <FontAwesomeIcon icon={faTimesCircle} />
-          </button>
-          {!selectedEvent ? (
-            <h1 className="title">Create Event</h1>
-          ) : (
-            <h1 className="title">
-              {selectedEvent.event.title}
-            </h1>
-          )}
+          <div className="modal-header">
+            <div className="flex-container">
+              <div className="btn-container">
+                {selectedEvent && (
+                  <button className="btn-delete" onClick={onDelete}>
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                )}
+              </div>
+              <div className="title-container">
+                <h1 className="title">
+                  {!selectedEvent ? "Create Event" : selectedEvent.event.title}
+                </h1>
+              </div>
+              <div className="btn-container">
+                <button
+                  className="btn-close"
+                  onClick={() => {
+                    setOpenCreationModal(false);
+                    setSelectedEvent(null);
+                    setSelectedDate(null);
+                  }}
+                >
+                  <KeyboardReturn />
+                </button>
+              </div>
+            </div>
 
-          <div
+          </div>
+
+
+          <div className="modal-content"
             style={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
             }}
           >
+
             {!previewURL && !image ? (
               <div>
                 {/* Your existing code for the file input */}
                 <input accept="image/*" type="file" id="image-upload" style={{ display: "none" }} onChange={handleImageUpload} />
                 {/* Your existing code for the label and button */}
                 <label htmlFor="image-upload">
-                  <Button variant="contained" component="span">
+                  <Button variant="contained" component="span" sx={{backgroundColor: '#5d576b'}}>
                     Upload Poster
                   </Button>
                 </label>
@@ -335,8 +299,8 @@ export default function EventCreationModal() {
             ) : (
               <div
                 style={{
-                  maxWidth: "100%",
-                  maxHeight: "40vh",
+                  maxWidth: "600px",
+                  maxHeight: "100%",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
@@ -345,7 +309,13 @@ export default function EventCreationModal() {
                   marginBottom: "10px",
                 }}
               >
-                <ModalImage small={previewURL || largerImageURL} large={previewURL || largerImageURL} hideDownload={true} hideZoom={true} />
+                <ModalImage
+                  small={previewURL || largerImageURL}
+                  large={previewURL || largerImageURL}
+                  hideDownload={true}
+                  hideZoom={true}
+                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
+                />
 
                 {/* X button */}
                 <div
@@ -428,7 +398,7 @@ export default function EventCreationModal() {
                 alignSelf: "center",
               }}
             />
-            <TestSearch onLabelChange={handleLabelChange} defaultCategories={selectedOption} />
+            <TagSearch onLabelChange={handleLabelChange} defaultCategories={selectedOption} />
           </Box>
 
           <Box
