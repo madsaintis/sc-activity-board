@@ -12,7 +12,6 @@ export default function UserForm() {
     id: null,
     name: "",
     email: "",
-    role: "",
     password: "",
     password_confirmation: "",
     role: ""

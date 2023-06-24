@@ -53,7 +53,6 @@ export default function Login() {
         <h1 className='title'>
             SC ACTIVITY BOARD
           </h1>
-          -----------------------------------------------------------
           <h1 className='title'>
             Login into your account
           </h1>
