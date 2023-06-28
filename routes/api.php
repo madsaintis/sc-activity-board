@@ -22,7 +22,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->group(function() {
-    
 
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::apiResource('/users', UserController::class);
@@ -30,28 +29,12 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('/categories', CategoryController::class);
     Route::post('/favourites', [FavoriteController::class, 'store']);
     Route::delete('/favourites/{userId}/{eventId}', [FavoriteController::class, 'destroy']);
-
-    // Route::get('/email/verify', function () {
-    //     return redirect('http://localhost:3000/verify');
-    // })->middleware('auth')->name('verification.notice');
-
-    // Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    //     $request->fulfill();
-
-    //     return redirect('http://localhost:3000/home');
-    // })->middleware(['auth', 'signed'])->name('verification.verify');
-
-    // Route::post('/email/verification-notification', function (Request $request) {
-    //     $request->user()->sendEmailVerificationNotification();
-     
-    //     return back()->with('message', 'Verification link sent!');
-    // })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
-
+    
     Route::get('/email/verify', [EmailVerificationController::class, 'notice'])
     ->middleware('auth:sanctum')
     ->name('verification.notice');
 
-Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])
+    Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])
     ->middleware('throttle:1,60')
     ->name('verification.send');
 
@@ -63,3 +46,4 @@ Route::post('/email/verification-notification', [EmailVerificationController::cl
 Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
+

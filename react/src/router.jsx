@@ -10,7 +10,6 @@ import UserForm from "./views/UserForm.jsx";
 import Users from "./views/Users.jsx";
 import VerifyEmail from "./views/EmailVerifyView/VerifyEmail.jsx";
 import { useStateContext } from "./context/ContextProvider.jsx";
-import Test from "./views/Test.jsx";
 import VerifySuccess from "./views/EmailVerifyView/VerifySuccess.jsx";
 import VerifyPending from "./views/EmailVerifyView/VerifyPending.jsx";
 import VerifyLayout from "./components/VerifyLayout.jsx";
@@ -43,10 +42,6 @@ const router = createBrowserRouter([
       {
         path: "/users/:id",
         element: <UserForm key="userUpdate" />,
-      },
-      {
-        path: "/test",
-        element: <Test />,
       },
     ],
   },

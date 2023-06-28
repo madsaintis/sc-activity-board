@@ -5,7 +5,6 @@ import { useStateContext } from '../context/ContextProvider';
 import { Card, CardContent, Typography } from '@mui/material';
 import EventModal from '../components/Calendar/EventModal';
 import EventCreationModal from '../components/Calendar/EventCreationModal';
-import RenderGroup from '../components/Calendar/RenderGroup';
 import EventSearch from '../components/Calendar/EventSearch';
 import EventSearchFavourite from '../components/Calendar/EventSearchFavourite';
 import { Sell } from '@mui/icons-material';

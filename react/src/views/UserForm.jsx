@@ -35,7 +35,6 @@ export default function UserForm() {
     }, []);
   }
 
-  console.log(user)
   const onSubmit = (ev) => {
     ev.preventDefault();
       axiosClient
@@ -69,7 +68,7 @@ export default function UserForm() {
   </div>
 </div>
 
-<div className="card animated fadeInDown">
+<div className="card animated fadeInDown" style={{margin: '10px'}}>
   {loading && <div className="text-center">Loading...</div>}
   {errors && (
     <div className="alert">
@@ -87,7 +86,7 @@ export default function UserForm() {
       />
       <input
         value={user.email}
-        onChange={(ev) => setUser({ ...user, email: ev.target.value })}
+        disabled
         placeholder="Email"
       />
       <input

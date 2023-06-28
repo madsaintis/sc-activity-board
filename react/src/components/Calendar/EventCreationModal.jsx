@@ -22,6 +22,7 @@ export default function EventCreationModal() {
   const startTimeRef = useRef();
   const endTimeRef = useRef();
 
+  const [isDisabled, setIsDisabled] = useState(false);
   const [errors, setErrors] = useState(null);
   const [searchText, setSearchText] = useState("");
 
@@ -61,6 +62,13 @@ export default function EventCreationModal() {
   const handleCloseModal = () => {
     setOpenCreationModal(false);
     setSelectedEvent(null);
+  };
+
+  const isEventParticipant = () => {
+    if(user.role === 'Event Participant')
+      return true;
+
+    return false;
   };
 
   // Image Upload Function
@@ -107,10 +115,9 @@ export default function EventCreationModal() {
   // Event Creation Function
   const onSubmit = (event) => {
     event.preventDefault();
-
+    setIsDisabled(true);
     const newStartTime = reformatDate(selectedDate, startTime);
     const newEndTime = reformatDate(selectedDate, endTime);
-
     const formData = new FormData();
     formData.append("title", titleRef.current.value);
     formData.append("location", LocationRef.current.value);
@@ -120,34 +127,34 @@ export default function EventCreationModal() {
     formData.append("date", selectedDate.toISOString());
     formData.append("organiser_id", user.id);
     formData.append("is_public", isPublic ? "1" : "0");
-
     if (image) {
       // Append the poster field only if an image is selected
       formData.append("poster", image);
     }
-
     selectedOption.forEach((option) => {
       formData.append("categories[]", option.tag_id);
     });
-
     const config = {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     };
-
     axiosClient
       .post("/events", formData, config)
       .then((response) => {
+        setIsDisabled(false);
         getEvents();
         setNotification("Event created successfully");
         handleCloseModal();
+        
       })
       .catch((err) => {
         const response = err.response;
         if (response && response.status === 422) {
+          setIsDisabled(false);
           setErrors(response.data.errors);
         } else {
+          setIsDisabled(false);
           setErrors("An error occurred while creating event. Please try again.");
         }
       });
@@ -156,12 +163,10 @@ export default function EventCreationModal() {
   // Event Update Function
   const onUpdate = (event) => {
     event.preventDefault();
-
+    setIsDisabled(true);
     const newStartTime = reformatDate(selectedDate, startTime);
     const newEndTime = reformatDate(selectedDate, endTime);
-
     const formData = new FormData();
-
     formData.append("_method", "PUT");
     formData.append("title", titleRef.current.value);
     formData.append("location", LocationRef.current.value);
@@ -172,32 +177,30 @@ export default function EventCreationModal() {
     formData.append("organiser_id", user.id);
     formData.append("is_public", isPublic ? "1" : "0");
     formData.append("changed", changed);
-
     // Add condition to append the updated poster image if available
     if (changed) {
       if (image) formData.append("poster", image);
     }
-
     selectedOption.forEach((option) => {
       formData.append("categories[]", option.tag_id);
     });
-
     const config = {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     };
-
     axiosClient
       .post(`/events/${selectedEvent.event.id}`, formData, config)
       .then((response) => {
         setNotification("Event edited successfully.");
         getEvents();
+        setIsDisabled(false);
       })
       .catch((err) => {
         const response = err.response;
         if (response && response.status === 422) {
           setErrors(response.data.errors);
+          setIsDisabled(false);
         }
       });
   };
@@ -205,12 +208,14 @@ export default function EventCreationModal() {
   // Event Deletion Function
   const onDelete = (event) => {
     event.preventDefault();
+    setIsDisabled(true);
     if (!window.confirm("Are you sure you want to delete this event?")) {
       return;
     }
     axiosClient.delete(`/events/${selectedEvent.event.id}`).then(() => {
       getEvents();
       setNotification("Event was successfully deleted");
+      setIsDisabled(false);
       setOpenCreationModal(false);
       setSelectedEvent(null);
     });
@@ -250,7 +255,7 @@ export default function EventCreationModal() {
             <div className="flex-container">
               <div className="btn-container">
                 {selectedEvent && (
-                  <button className="btn-delete" onClick={onDelete}>
+                  <button className="btn-delete" onClick={onDelete} disabled={isDisabled}>
                     <FontAwesomeIcon icon={faTrash} />
                   </button>
                 )}
@@ -451,6 +456,7 @@ export default function EventCreationModal() {
             labelPlacement="end"
             control={
               <Checkbox
+                disabled= {isEventParticipant()}
                 checked={isPublic}
                 color="secondary"
                 onChange={() => setIsPublic(!isPublic)}
@@ -460,10 +466,10 @@ export default function EventCreationModal() {
             }
           />
 
-          {!selectedEvent && <button className="btn btn-block">Create</button>}
+          {!selectedEvent && <button className="btn btn-block" disabled={isDisabled}>Create</button>}
 
           {selectedEvent?.event?.extendedProps.organiser === user.name && (
-            <button className="btn btn-block" onClick={onUpdate}>
+            <button className="btn btn-block" onClick={onUpdate} disabled={isDisabled}>
               Edit
             </button>
           )}

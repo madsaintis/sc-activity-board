@@ -1,4 +1,4 @@
-import { Menu as MenuIcon } from '@mui/icons-material';
+import { Event, Menu as MenuIcon } from '@mui/icons-material';
 import {
   AppBar,
   Toolbar,
@@ -8,6 +8,7 @@ import {
   Drawer,
   Link,
   MenuItem,
+  Box,
 } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -15,8 +16,7 @@ import axiosClient from '../axios-client';
 import { useStateContext } from '../context/ContextProvider';
 
 const headerStyles = {
-  backgroundColor: '#400CCC',
-
+  backgroundColor: '#5b08a7',
   '@media (maxWidth: 900px)': {
     paddingLeft: 0,
   },
@@ -178,9 +178,9 @@ export default function Header() {
   
 
   const AppLogo = (
-    <div>
-      <Typography variant="h6" component="h1" style={logoStyles}>
-        SC Activity Board
+    <div>    
+      <Typography variant="h5" component="h1" style={logoStyles}>
+      <Event /> SC Activity Board
       </Typography>
     </div>
   );

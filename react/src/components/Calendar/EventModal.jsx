@@ -167,7 +167,11 @@ export default function EventModal() {
 
               <div className="title-container">
                 <h2 className="title">
-                  {selectedEvent.event.title}
+                  {selectedEvent.event.title} <FontAwesomeIcon
+                icon={faStar}
+                onClick={handleStarClick}
+                color={isStarred ? "#FFC107" : "inherit"}
+              />
                 </h2>
                 <h4>{date}</h4>
                 <h6>by: {organiser}</h6>

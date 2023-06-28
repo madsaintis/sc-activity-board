@@ -32,7 +32,7 @@ export default function Calendar() {
     setSelectedDate(args.event.start)
     setSelectedEvent(args);
 
-    if(args.event.extendedProps.organiser == user.name) {
+    if(args.event.extendedProps.isOrganiser || user.role === 'Admin') {
       setOpenCreationModal(true);
     }
 
@@ -62,11 +62,14 @@ function determineDayCellClassNames(date) {
  return (
     <div className='calendar-container'>
       <FullCalendar
-        
         plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin]}
         initialView='dayGridMonth'
+        fixedWeekCount={false}
+        eventClick={handleEvent}
+        contentHeight={contentHeight}
+        displayEventTime={true}
+        eventDisplay='block'
         events={eventsData.map(event => {
-  
           return {
             id: event.id,
             title: event.title,
@@ -82,7 +85,8 @@ function determineDayCellClassNames(date) {
               categories: event.categories,
               isPublic: event.isPublic,
               image: event.poster,
-              isFavourite: event.isFavourite
+              isFavourite: event.isFavourite,
+              isOrganiser: event.isOrganiser
             }
           };
         })}
@@ -92,23 +96,12 @@ function determineDayCellClassNames(date) {
             setOpenCreationModal(true);
           }
         }}
-
-        fixedWeekCount={false}
-        eventClick={handleEvent}
-        contentHeight={contentHeight}
-        displayEventTime={true}
         headerToolbar={{
           left: 'prev,next',
           center: 'title',
-          right: 'dayGridMonth,listWeek' // user can switch between the two
+          right: 'dayGridMonth,listMonth' // user can switch between the two
         }}
         dayCellClassNames={determineDayCellClassNames}
-        eventDisplay='block'
-        // eventTimeFormat={{
-        //   hour: '2-digit',
-        //   minute: '2-digit',
-        //   meridiem: true,
-        // }}
         eventContent={(eventInfo) => (
           <div style={{ fontSize: '14px', padding: '0px 2px' }}>{eventInfo.event.title}</div>
         )}

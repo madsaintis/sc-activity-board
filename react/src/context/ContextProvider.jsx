@@ -83,7 +83,6 @@ export const ContextProvider = ({children}) => {
           const events = response.data.data;
           if (Array.isArray(events)) {
             const favouritedEvents = events.filter((event) => event.isFavourite || event.isOrganiser);
-            // console.log(favouritedEvents);
             setInitialEvents(events);
             setEvents(events);
             setInitialFavouritedEvents(favouritedEvents);

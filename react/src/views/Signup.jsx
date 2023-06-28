@@ -12,10 +12,12 @@ export default function Signup() {
   const passwordConfirmationRef = useRef();
   const [errors, setErrors] = useState(null);
   const {setUser, setToken, setVerifyEmail, verifyEmail} = useStateContext();
+  const [isDisabled, setIsDisabled] = useState(false);
   const navigate = useNavigate();
 
   const onSubmit = (event) => {
-    event.preventDefault()
+    event.preventDefault();
+    setIsDisabled(true);
     setErrors(null);
     const payload = {
       name: nameRef.current.value,
@@ -23,19 +25,19 @@ export default function Signup() {
       password: passwordRef.current.value,
       password_confirmation: passwordConfirmationRef.current.value,
     }
-
     axiosClient.post('/signup', payload)
-
       // Set user and access token if register process completes
       .then(({data}) => {
         setUser(data.user)
         setToken(data.token)
+        setIsDisabled(false);
         setVerifyEmail(true);
       })
       // catch error if registration not successful
       .catch(err => {
         const response = err.response;
         if(response && response.status === 422) {
+          setIsDisabled(false);
           setErrors(response.data.errors);
         }
       })
@@ -54,7 +56,7 @@ export default function Signup() {
           <input ref={emailRef} type ="email" placeholder='Email' />
           <input ref={passwordRef} type ="password" placeholder='Password' />
           <input ref={passwordConfirmationRef} type ="password" placeholder='Password Confirmation' />
-          <button className='btn btn-block'>Signup</button>
+          <button className='btn btn-block' disabled={isDisabled}>Signup</button>
 
             { errors && <div className='alert'>
             {  Object.keys(errors).map(key => (

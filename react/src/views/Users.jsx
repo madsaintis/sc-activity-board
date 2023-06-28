@@ -36,20 +36,20 @@ export default function Users() {
   }
   
    return (
-    <div style={{ display: 'flex', justifyContent: 'center', height: 'auto' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', height: 'auto', minWidth: '40%' }}>
       {/* <div style={{display: 'flex', justifyContent: "space-between", alignItems: "center"}}>
         <h1>Users</h1>
         <Link className="btn-add" to="/users/new">Add new</Link>
       </div> */}
-      <div className="card animated fadeInDown" style={{maxWidth:'600px'}}>
+      
+      <div className="card animated fadeInDown" style={{maxWidth:'800px'}}>
+      <h1 style={{margin: "10px"}}>User List</h1>
         <table>
           <thead>
           <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-
-            <th>Actions</th>
+            <th className='id'>ID</th>
+            <th className='email'>Email</th>
+            <th className='action'>Actions</th>
           </tr>
           </thead>
           {loading &&
@@ -66,7 +66,6 @@ export default function Users() {
             {users.map(u => (
               <tr key={u.id}>
                 <td>{u.id}</td>
-                <td>{u.name}</td>
                 <td>{u.email}</td>
                 <td>
                   <Link className="btn-edit" to={'/users/' + u.id}>Edit</Link>

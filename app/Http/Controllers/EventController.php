@@ -13,18 +13,18 @@ class EventController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-{
-    $publicEvents = Event::where('is_Public', true)->orderBy('id', 'asc')->get();
+    {
+        $publicEvents = Event::where('is_Public', true)->orderBy('id', 'asc')->get();
 
-    $privateEvents = Event::where('is_Public', false)
-                          ->where('organiser_id', auth()->id())
-                          ->orderBy('id', 'asc')
-                          ->get();
+        $privateEvents = Event::where('is_Public', false)
+                            ->where('organiser_id', auth()->id())
+                            ->orderBy('id', 'asc')
+                            ->get();
 
-    $events = $publicEvents->concat($privateEvents);
+        $events = $publicEvents->concat($privateEvents);
 
-    return EventResource::collection($events);
-}
+        return EventResource::collection($events);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -109,7 +109,6 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-
         $event->categories()->detach();
         $event -> delete();
         return response("", 204);
