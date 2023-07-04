@@ -9,37 +9,27 @@ use App\Http\Resources\EventResource;
 
 class EventController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
+    // Controller to retrieve events
     public function index()
     {
+        // Retrieve all public events
         $publicEvents = Event::where('is_Public', true)->orderBy('id', 'asc')->get();
 
+        // Retrieve all current user private events
         $privateEvents = Event::where('is_Public', false)
                             ->where('organiser_id', auth()->id())
                             ->orderBy('id', 'asc')
                             ->get();
 
+        // Combine both arrays into one
         $events = $publicEvents->concat($privateEvents);
 
+        // Return event array in JSON format
         return EventResource::collection($events);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    // public function store(StoreEventRequest $request)
-    // {
-    //     //
-    //     $data = $request->validated();
-
-    //     $event = Event::create($data);
-    //     $event->categories()->attach($request->categories);
-        
-    //     return response(new EventResource($event), 201);
-    // }
-
+    // Controller for creating new event
     public function store(StoreEventRequest $request)
 {
     $data = $request->validated();
@@ -50,14 +40,14 @@ class EventController extends Controller
         $data['poster'] = file_get_contents($poster);
     }
 
+    // Create new event model into the database
     $event = Event::create($data);
     
-    // Retrieve the selected category IDs
+    // Create many to many relationships based on the event categories
     if (isset($data['categories']) && is_array($data['categories'])) {
         $event->categories()->attach($data['categories']);
     }
 
-    
     return response(new EventResource($event), 201);
 }
 
@@ -69,9 +59,7 @@ class EventController extends Controller
         return new EventResource($event);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // Controller for updating existing event
    public function update(UpdateEventRequest $request, Event $event)
 {
     $data = $request->validated();
@@ -84,16 +72,13 @@ class EventController extends Controller
         $poster = $request->file('poster');
         $data['poster'] = file_get_contents($poster);
     } elseif ($changed) {
-        // If the 'changed' value is 'true' but no new poster file provided,
-        // you can perform any other necessary actions here
-        // ...
         $data['poster'] = null;
     }
 
     // Update the event data
     $event->update($data);
 
-    // Update the selected category IDs
+    // Update the event category table based on new event categories
     if (isset($data['categories']) && is_array($data['categories'])) {
         $event->categories()->sync($data['categories']);
     } else {
@@ -104,12 +89,14 @@ class EventController extends Controller
     return response(new EventResource($event), 201);
 }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // Controller for deleting existing event
     public function destroy(Event $event)
     {
+        // Remove all entries in event category table that related 
+        // to this event
         $event->categories()->detach();
+
+        // Remove event from the database
         $event -> delete();
         return response("", 204);
     }

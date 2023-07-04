@@ -6,27 +6,21 @@ import EventCreationModal from '../components/Calendar/EventCreationModal';
 import EventSearch from '../components/Calendar/EventSearch';
 
 export default function Home() {
-  const { user, showEventModal, eventsDatam, token, getEvents, setEvents } = useStateContext();
-
-  // useEffect (()=> {
-  //   getEvents();
-  // }, []);
+  const { user, eventsDatam, token, getEvents, setEvents } = useStateContext();
 
   return (
     <div className='homePage'>
+
+      {/* Home page header*/}
       <div className='welcome'>
         <h2>Welcome, {user.name}</h2>
       </div>
             <EventSearch />
+
+      {/* Calendar component */}
       <div id='Calendar' className="calendarContainer">
-        {/* <Sidebar/> */}
         <Calendar />
       </div>
-      {showEventModal && (
-        <div className="eventModalWrapper">
-          <EventCreationModal />
-        </div>
-      )}
     </div>
   );
 

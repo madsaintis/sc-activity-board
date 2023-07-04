@@ -25,27 +25,19 @@ export default function EventCreationModal() {
   const [isDisabled, setIsDisabled] = useState(false);
   const [errors, setErrors] = useState(null);
   const [searchText, setSearchText] = useState("");
-
-  const { setShowEventModal, selectedEvent, setSelectedEvent, selectedDate, user, getEvents, setSelectedDate, setNotification, openCreationModal, setOpenCreationModal } = useStateContext();
-
+  const { selectedEvent, setSelectedEvent, selectedDate, user, getEvents, setSelectedDate, setNotification, openCreationModal, setOpenCreationModal } = useStateContext();
   const [title, setTitle] = useState(selectedEvent ? selectedEvent.event.title : "");
   const [description, setDescription] = useState(selectedEvent ? selectedEvent.event.extendedProps.description : "");
   const [location, setLocation] = useState(selectedEvent ? selectedEvent.event.extendedProps.location : "");
   const [startTime, setStartTime] = useState(selectedEvent ? dayjs(selectedEvent.event.extendedProps.startTime) : null);
   const [endTime, setEndTime] = useState(selectedEvent ? dayjs(selectedEvent.event.extendedProps.endTime) : null);
-
   const [image, setImage] = useState(selectedEvent ? selectedEvent.event.extendedProps.image : null);
-
   const [changed, setChanged] = useState(false);
-
   const [previewURL, setPreviewURL] = useState(null);
-
   const largerImageURL = `data:image/jpeg;base64,${image}`;
-
   const [isPublic, setIsPublic] = useState(
     selectedEvent ? (selectedEvent.event.extendedProps.isPublic === 1 ? true : false) : false
   );
-
   const [selectedOption, setSelectedOption] = useState(
     selectedEvent
       ? selectedEvent.event.extendedProps.categories.map((category) => ({
@@ -59,13 +51,15 @@ export default function EventCreationModal() {
   // End of Variable Declaration
   // -------------------------------------------------------------------------------------/
 
+  // Handle if user click close button
   const handleCloseModal = () => {
     setOpenCreationModal(false);
     setSelectedEvent(null);
   };
 
+  // Handle check if user is an Event Participant
   const isEventParticipant = () => {
-    if(user.role === 'Event Participant')
+    if (user.role === 'Event Participant')
       return true;
 
     return false;
@@ -81,7 +75,6 @@ export default function EventCreationModal() {
     reader.onload = () => {
       setPreviewURL(reader.result);
     };
-
     reader.readAsDataURL(file);
   };
 
@@ -116,8 +109,12 @@ export default function EventCreationModal() {
   const onSubmit = (event) => {
     event.preventDefault();
     setIsDisabled(true);
+
+    // Reformat selected time from time picker field
     const newStartTime = reformatDate(selectedDate, startTime);
     const newEndTime = reformatDate(selectedDate, endTime);
+
+    // Create new form data to be submitted to the API
     const formData = new FormData();
     formData.append("title", titleRef.current.value);
     formData.append("location", LocationRef.current.value);
@@ -128,26 +125,22 @@ export default function EventCreationModal() {
     formData.append("organiser_id", user.id);
     formData.append("is_public", isPublic ? "1" : "0");
     if (image) {
-      // Append the poster field only if an image is selected
+      // Append the poster field only if an image is uploaded
       formData.append("poster", image);
     }
-    selectedOption.forEach((option) => {
-      formData.append("categories[]", option.tag_id);
-    });
-    const config = {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    };
-    axiosClient
-      .post("/events", formData, config)
-      .then((response) => {
-        setIsDisabled(false);
-        getEvents();
-        setNotification("Event created successfully");
-        handleCloseModal();
-        
-      })
+    selectedOption.forEach((option) => { formData.append("categories[]", option.tag_id); });
+
+    // Set the content type to multipart/form-data
+    const config = { headers: { "Content-Type": "multipart/form-data", }, };
+
+    // POST request to API '/events'
+    axiosClient.post("/events", formData, config).then((response) => {
+      setIsDisabled(false);
+      getEvents();
+      setNotification("Event created successfully");
+      handleCloseModal();
+
+    })
       .catch((err) => {
         const response = err.response;
         if (response && response.status === 422) {
@@ -164,8 +157,12 @@ export default function EventCreationModal() {
   const onUpdate = (event) => {
     event.preventDefault();
     setIsDisabled(true);
+
+    // Reformat selected time from time picker field
     const newStartTime = reformatDate(selectedDate, startTime);
     const newEndTime = reformatDate(selectedDate, endTime);
+
+    // Create new form data to be submitted to the API
     const formData = new FormData();
     formData.append("_method", "PUT");
     formData.append("title", titleRef.current.value);
@@ -177,18 +174,16 @@ export default function EventCreationModal() {
     formData.append("organiser_id", user.id);
     formData.append("is_public", isPublic ? "1" : "0");
     formData.append("changed", changed);
-    // Add condition to append the updated poster image if available
-    if (changed) {
-      if (image) formData.append("poster", image);
-    }
-    selectedOption.forEach((option) => {
-      formData.append("categories[]", option.tag_id);
-    });
-    const config = {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    };
+
+    // Add change condition to append the updated poster image if there is any
+    if (changed) { if (image) formData.append("poster", image); }
+
+    selectedOption.forEach((option) => { formData.append("categories[]", option.tag_id); });
+
+    // Set the content type to multipart/form-data
+    const config = { headers: { "Content-Type": "multipart/form-data", }, };
+
+    // POST request to API '/events' but with PUT method in FormData
     axiosClient
       .post(`/events/${selectedEvent.event.id}`, formData, config)
       .then((response) => {
@@ -196,6 +191,8 @@ export default function EventCreationModal() {
         getEvents();
         setIsDisabled(false);
       })
+
+      // Handle exception thrown by server
       .catch((err) => {
         const response = err.response;
         if (response && response.status === 422) {
@@ -209,9 +206,13 @@ export default function EventCreationModal() {
   const onDelete = (event) => {
     event.preventDefault();
     setIsDisabled(true);
+
+    // Asks for user confirmation
     if (!window.confirm("Are you sure you want to delete this event?")) {
       return;
     }
+
+    // DELETE request to API '/events'
     axiosClient.delete(`/events/${selectedEvent.event.id}`).then(() => {
       getEvents();
       setNotification("Event was successfully deleted");
@@ -222,7 +223,7 @@ export default function EventCreationModal() {
   };
 
   return (
-    <Modal
+    <Modal className="event-modal-wrapper"
       open={openCreationModal}
       onClose={(event, reason) => {
         if (reason && reason === "backdropClick") {
@@ -230,29 +231,11 @@ export default function EventCreationModal() {
         }
         handleCloseModal();
       }}
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        outline: 0,
-      }}
     >
-      <Box className="modal"
-        sx={{
-          width: "auto",
-          maxWidth: "90%",
-          maxHeight: "70%",
-          bgcolor: "background.paper",
-          alignItems: "center",
-          justifyContent: "center",
-          p: 2,
-          overflow: "auto",
-          borderRadius: 2
-        }}
-      >
+      <Box className="event-modal">
         <form onSubmit={onSubmit}>
           <div className="modal-header">
-            <div className="flex-container">
+            <div className="header-flex-container">
               <div className="btn-container">
                 {selectedEvent && (
                   <button className="btn-delete" onClick={onDelete} disabled={isDisabled}>
@@ -278,171 +261,73 @@ export default function EventCreationModal() {
                 </button>
               </div>
             </div>
-
           </div>
 
-
-          <div className="modal-content"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
+          <div className="modal-content">
 
             {!previewURL && !image ? (
-              <div>
-                {/* Your existing code for the file input */}
+              <div className="upload-button">
                 <input accept="image/*" type="file" id="image-upload" style={{ display: "none" }} onChange={handleImageUpload} />
-                {/* Your existing code for the label and button */}
                 <label htmlFor="image-upload">
-                  <Button variant="contained" component="span" sx={{backgroundColor: '#5d576b'}}>
+                  <Button variant="contained" component="span" sx={{ backgroundColor: '#5d576b', marginTop: "10px" }}>
                     Upload Poster
                   </Button>
                 </label>
               </div>
             ) : (
-              <div
-                style={{
-                  maxWidth: "600px",
-                  maxHeight: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  position: "relative",
-                  overflow: "hidden",
-                  marginBottom: "10px",
-                }}
-              >
-                <ModalImage
-                  small={previewURL || largerImageURL}
-                  large={previewURL || largerImageURL}
-                  hideDownload={true}
-                  hideZoom={true}
-                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
-                />
+              <div className="image-preview">
+                <div className="image-box">
+                  <ModalImage
+                    small={previewURL || largerImageURL}
+                    large={previewURL || largerImageURL}
+                    hideDownload={true}
+                    hideZoom={true}
+                  />
+                </div>
 
-                {/* X button */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "5px",
-                    right: "5px",
-                  }}
-                >
-                  <IconButton
-                    onClick={handleImageRemove}
-                    size="small"
-                    style={{
-                      background: "rgba(0, 0, 0, 0.5)",
-                      color: "white",
-                      fontSize: "0.5rem",
-                    }}
-                  >
-                    <CloseIcon />
-                  </IconButton>
+                <div className="upload-button">
+                  <input accept="image/*" type="file" id="image-upload" style={{ display: "none" }} onChange={handleImageUpload} />
+                  <label htmlFor="image-upload">
+                    <Button variant="contained" component="span" sx={{ backgroundColor: '#5d576b', marginTop: "10px" }}>
+                      Upload Poster
+                    </Button>
+                  </label>
                 </div>
               </div>
             )}
           </div>
 
-          <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Title sx={{ color: "primary", mr: 1, my: 0.5, alignSelf: "center" }} />
+          <Box className="textfield-box">
+            <Title className="textfield-icon"/>
             <TextField fullWidth inputRef={titleRef} label="Title" variant="outlined" margin="dense" size="small" defaultValue={title} />
           </Box>
 
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <LocationOn
-              sx={{
-                color: "action.active",
-                mr: 1,
-                my: 0.5,
-                alignSelf: "center",
-              }}
-            />
+          <Box className="textfield-box">
+            <LocationOn className="textfield-icon"/>
             <TextField fullWidth inputRef={LocationRef} label="Location" variant="outlined" margin="dense" size="small" defaultValue={location} />
           </Box>
 
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Description
-              sx={{
-                color: "action.active",
-                mr: 1,
-                my: 0.5,
-                alignSelf: "center",
-              }}
-            />
+          <Box className="textfield-box">
+            <Description className="textfield-icon"/>
             <TextField fullWidth inputRef={descriptionRef} label="Description" variant="outlined" margin="dense" size="small" defaultValue={description} multiline />
           </Box>
 
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              my: 1,
-            }}
-          >
-            <Sell
-              sx={{
-                color: "action.active",
-                mr: 1,
-                my: 0.5,
-                alignSelf: "center",
-              }}
-            />
+          <Box className="textfield-box">
+            <Sell className="textfield-icon"/>
             <TagSearch onLabelChange={handleLabelChange} defaultCategories={selectedOption} />
           </Box>
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              mb: 2,
-              mt: 2,
-            }}
-          >
-            <Typography
-              variant="body1"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                mb: 0.5,
-              }}
-            >
-              <Schedule
-                sx={{
-                  color: "action.active",
-                  mr: 0.5,
-                  my: 0,
-                }}
-              />
+          <Box className="create-time-box">
+            <Typography className="create-time-label" variant="body1">
+              <Schedule className="create-time-icon" />
               Time
             </Typography>
 
-            <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+            <Box className="pick-time-box">
               <TimePicker label="Start Time" value={startTime} inputRef={startTimeRef} onChange={(newValue) => setStartTime(newValue)} />
 
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  mx: 1,
-                }}
-              >
-                <Typography variant="body1" sx={{ mx: 0.5 }}>
+              <Box className="hyphen-box">
+                <Typography variant="body1">
                   -
                 </Typography>
               </Box>
@@ -456,11 +341,10 @@ export default function EventCreationModal() {
             labelPlacement="end"
             control={
               <Checkbox
-                disabled= {isEventParticipant()}
+                disabled={isEventParticipant()}
                 checked={isPublic}
                 color="secondary"
                 onChange={() => setIsPublic(!isPublic)}
-                // disabled={user.role === "Event Participant"}
                 id="publicCheckbox"
               />
             }

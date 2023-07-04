@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Protected routes based on user
 Route::middleware('auth:sanctum')->group(function() {
 
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -28,13 +29,16 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::apiResource('/events', EventController::class);
     Route::apiResource('/categories', CategoryController::class);
     Route::post('/favourites', [FavoriteController::class, 'store']);
-    Route::delete('/favourites/{userId}/{eventId}', [FavoriteController::class, 'destroy']);
+    Route::delete('/favourites/{userId}/{eventId}', 
+    [FavoriteController::class, 'destroy']);
     
-    Route::get('/email/verify', [EmailVerificationController::class, 'notice'])
+    Route::get('/email/verify', 
+    [EmailVerificationController::class, 'notice'])
     ->middleware('auth:sanctum')
     ->name('verification.notice');
 
-    Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])
+    Route::post('/email/verification-notification', 
+    [EmailVerificationController::class, 'resend'])
     ->middleware('throttle:1,60')
     ->name('verification.send');
 
@@ -45,5 +49,6 @@ Route::middleware('auth:sanctum')->group(function() {
 
 Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
+Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+->name('verification.verify');
 

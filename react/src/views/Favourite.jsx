@@ -10,7 +10,7 @@ import EventSearchFavourite from '../components/Calendar/EventSearchFavourite';
 import { Sell } from '@mui/icons-material';
 
 export default function Favourite() {
-  const { user, setShowEventModal, setSelectedEvent, setSelectedDate, eventsData, getEvents, getTags, getPrivateEvents, setOpenCreationModal, openCreationModal, setOpenModal, openModal,theme, favouriteEventsData} = useStateContext();
+  const { user, setSelectedEvent, setSelectedDate, setOpenCreationModal, openCreationModal, setOpenModal, openModal, favouriteEventsData } = useStateContext();
   const options = { hour: 'numeric', minute: 'numeric', hour12: true };
 
   // Sort events by date
@@ -20,19 +20,22 @@ export default function Favourite() {
     return dateA - dateB;
   });
 
+  // Format date display
   const formatDate = (dateString) => {
     const options = { weekday: 'long', day: 'numeric', month: 'long' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  // Format time display
   function formatTime(timeString) {
     const date = new Date(`2000-01-01 ${timeString}`); // Use a dummy date to parse the time
     return (date.toLocaleTimeString([], { timeStyle: 'short' })).toUpperCase(); // Format as 12-hour time
   }
 
   const handleEvent = (args) => {
-
     setSelectedDate(new Date(args.start_time))
+
+    // Save selected event information
     setSelectedEvent({
       event: {
         id: args.id,
@@ -51,25 +54,22 @@ export default function Favourite() {
       },
     });
 
-    if(args.organiser == user.name) {
-    setOpenCreationModal(true);
+    // If user is the organiser of selected event, open create/edit event modal
+    if (args.organiser == user.name) {
+      setOpenCreationModal(true);
     }
-    
 
-     else {
-       setOpenModal(true);
-     }
-   }
-
-
+    // Else set view event information modal
+    else {
+      setOpenModal(true);
+    }
+  }
 
   return (
-    
-    <div style={{ display: 'flex', justifyContent: 'center', margin: '0 16px', padding: '10px' }}>
-      
+    <div className="my-event-page">
       <div style={{ maxWidth: '800px', width: '100%' }}>
-      <EventSearchFavourite />
-        <h1>My Events</h1> 
+        <EventSearchFavourite />
+        <h1>My Events</h1>
         {sortedEvents.map((event, index) => {
           const currentDate = formatDate(event.date);
           let previousDate = null;
@@ -93,23 +93,23 @@ export default function Favourite() {
                 <Card className="event-card" style={{ marginBottom: '10px' }}>
                   <CardContent>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {event.poster ? (
-  <div style={{ marginRight: '16px' }}>
-    <img
-      src={`data:image/jpeg;base64,${event.poster}`}
-      alt="Event Poster"
-      style={{ width: '100px' }}
-    />
-  </div>
-) : (
-  <div style={{ marginRight: '16px' }}>
-    <img
-      src="https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
-      alt="No Event Poster"
-      style={{ width: '100px' }}
-    />
-  </div>
-)}
+                      {event.poster ? (
+                        <div style={{ marginRight: '16px' }}>
+                          <img
+                            src={`data:image/jpeg;base64,${event.poster}`}
+                            alt="Event Poster"
+                            style={{ width: '100px' }}
+                          />
+                        </div>
+                      ) : (
+                        <div style={{ marginRight: '16px' }}>
+                          <img
+                            src="https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
+                            alt="No Event Poster"
+                            style={{ width: '100px' }}
+                          />
+                        </div>
+                      )}
 
                       <div>
                         <Typography variant="h5" component="div" fontWeight={'bold'}>
@@ -131,8 +131,8 @@ export default function Favourite() {
               </Link>
             </div>
           );
-          
-          
+
+
         })}
       </div>
 

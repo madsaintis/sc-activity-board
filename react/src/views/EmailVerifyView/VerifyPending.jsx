@@ -10,19 +10,23 @@ export default function VerifyPending() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // Handle resend email click
   const handleResendEmail = () => {
     setMessage(null);
     setError(null);
-    // Logic to resend the email
+    
+    // POST request to resend email
     axiosClient
       .post("/email/verification-notification")
       .then(() => {
         setMessage("Verification link sent to your email");
       })
+
+      // Catch error returned by server
       .catch(error => {
         const response = error.response;
         if (response && response.status === 429) {
-          setError("Too Many Requests. Please try again later."); 
+          setError("Too many requests made. Please try again later in 1 hour."); 
         }
         else { 
         setError("Failed to resend email verification. Try again later"); }
@@ -30,30 +34,25 @@ export default function VerifyPending() {
       );
   };
 
-  const handleBackButton = () => {
-    // Logic to resend the email
-    axiosClient.post("/logout").then(() => {
-      setUser({});
-      setToken(null);
-      navigate('/login');
-    });
-
-  };
-
   return (
-    <div className="login-signup-form animated fadeInDown">
+    <div className="verify-email animated fadeInDown">
       <div className="form">
-        <h1 className="title">Verify Your Email</h1>
-        <p>Please check your email to verify your account.</p>
-        <p>
-          If you did not receive the verification email, click Resend Email.
-        </p>
-        <button onClick={handleBackButton}>Back</button>
-        <button onClick={handleResendEmail}>Resend Email</button>
+      <h1 className="title">Verify Your Email</h1>
+
+        <div className="message">
+          Please check your email to verify your account.
+        </div>
+        <div className="message">
+          <p>
+            If you did not receive the verification email, click Resend Email.
+          </p>
+        </div>
         {message || error ? (<div className="alert">
           {message ? <p>{message}</p> : null}
           {error && <p>{error}</p>}
         </div>) : ""}
+        <button className='btn btn-block' onClick={handleResendEmail}>Resend Email</button>
+
       </div>
     </div>
   );

@@ -1,19 +1,17 @@
-import { Navigate, createBrowserRouter, useLocation } from "react-router-dom";
-import Login from "./views/Login.jsx";
-import NotFound from "./views/NotFound.jsx";
+import { Navigate, createBrowserRouter } from "react-router-dom";
 import DefaultLayout from "./components/DefaultLayout.jsx";
 import GuestLayout from "./components/GuestLayout.jsx";
-import Signup from "./views/Signup.jsx";
-import Home from "./views/Home.jsx";
+import VerifyLayout from "./components/VerifyLayout.jsx";
+import VerifyPending from "./views/EmailVerifyView/VerifyPending.jsx";
+import VerifySuccess from "./views/EmailVerifyView/VerifySuccess.jsx";
 import Favourite from "./views/Favourite.jsx";
+import Home from "./views/Home.jsx";
+import Login from "./views/Login.jsx";
+import Signup from "./views/Signup.jsx";
 import UserForm from "./views/UserForm.jsx";
 import Users from "./views/Users.jsx";
-import VerifyEmail from "./views/EmailVerifyView/VerifyEmail.jsx";
-import { useStateContext } from "./context/ContextProvider.jsx";
-import VerifySuccess from "./views/EmailVerifyView/VerifySuccess.jsx";
-import VerifyPending from "./views/EmailVerifyView/VerifyPending.jsx";
-import VerifyLayout from "./components/VerifyLayout.jsx";
 
+// Website routes
 const router = createBrowserRouter([
   {
     path: "/",
@@ -71,14 +69,10 @@ const router = createBrowserRouter([
         path: "/signup",
         element: <Signup />,
       },
-      {
-        path: "/verify",
-        element: <VerifyEmail />,
-      },
       
       {
         path: "*",
-        element: <NotFound />,
+        element: <Login />,
       },
     ],
   },

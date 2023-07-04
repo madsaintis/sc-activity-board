@@ -9,6 +9,8 @@ class FavoriteController extends Controller
 {
     public function store(Request $request)
     {
+
+        // Validate request
         $validatedData = $request->validate([
             'userId' => 'required',
             'eventId' => 'required',

@@ -14,32 +14,23 @@ const theme = createTheme({
   },
   palette: {
     primary: {
-      main: '#F7567C', // Set your primary color here
+      main: '#5b08a7', //   Primary color
     },
 
     secondary: {
-      main: '#5d576b', // Set your secondary color here
+      main: '#5d576b', // Secondary color
     },
-    // You can define more custom colors if needed
-    // For example:
-    // customColor: {
-    //   main: '#ff9800',
-    //   dark: '#f57c00',
-    //   light: '#ffb74d',
-    // },
   },
 });
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-    <ContextProvider >
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <RouterProvider router={router} />
-      </LocalizationProvider >
-    </ContextProvider>
+      <ContextProvider >
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <RouterProvider router={router} />
+        </LocalizationProvider >
+      </ContextProvider>
     </ThemeProvider>
-    
-
   </React.StrictMode>,
 )

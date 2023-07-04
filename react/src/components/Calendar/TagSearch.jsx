@@ -15,10 +15,12 @@ import { Fragment } from "react";
 import axiosClient from "../../axios-client";
 import { Sell, Square } from "@mui/icons-material";
 
+// Limit dropdown options to only 6 
 const filter = createFilterOptions({
   limit: 6
 });
 
+// List of possible colour choices
 const tagColourChoice = [
   { label: 'Ultra Violet', value: '#6461A0' },
   { label: 'Violet Blue', value: '#314CB6' },
@@ -46,6 +48,7 @@ export default function TagSearch(props) {
     tag_colour: "",
   });
 
+  // Close add tag window
   const handleClose = () => {
     setDialogValue({
       tag_name: "",
@@ -56,6 +59,7 @@ export default function TagSearch(props) {
   };
 
 
+  // Function to add new tag into database
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -63,15 +67,18 @@ export default function TagSearch(props) {
       tag_name: dialogValue.tag_name,
       tag_colour: dialogValue.tag_colour
     }
+
+    // POST request to API '/categories'
     axiosClient.post('/categories', payload)
 
-      // Set user and access token if register process completes
       .then(({ data }) => {
-
         getTags();
+
+        // Close add tag modal
         handleClose();
       })
-      // catch error if registration not successful
+
+      // Catch exception returned by server
       .catch(err => {
         const response = err.response;
         if (response && response.status === 422) {
@@ -81,9 +88,9 @@ export default function TagSearch(props) {
           console.log(errors);
         }
       })
-
   };
 
+  // Automatically fill tag field with selected event tags if there's anyu=
   useEffect(() => {
     setValue(defaultCategories);
   }, []);
@@ -233,9 +240,6 @@ export default function TagSearch(props) {
         </Box>
   </>
 )}
-
-
-
 
         </DialogContent>
         <DialogActions>

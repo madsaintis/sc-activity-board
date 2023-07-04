@@ -10,12 +10,11 @@ use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
+    // Controller for retrieving users
     public function index()
     {
-        //
+        // Return users list in JSON format
         return UserResource::collection(
             User::query()
                 ->where('role', '<>', 'Admin')
@@ -24,12 +23,9 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Controller for creating new user
     public function store(StoreUserRequest $request)
     {
-        //
         $data = $request->validated();
 
         $data['password'] = bcrypt($data['password']);
@@ -37,32 +33,31 @@ class UserController extends Controller
         return response(new UserResource($user), 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
+    // Controller for showing users
     public function show(User $user)
     {
-        //
         return new UserResource($user);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // Controller for update a user
     public function update(UpdateUserRequest $request, User $user)
     {
+        // Validate user input
         $data = $request -> validated();
+
+        // Hash user's new password
         if (isset($data['password'])) {
             $data['password'] = bcrypt($data['password']);
         }
+
+        // Update database entry based on new user
         $user->update($data);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // Controller for deleting a user
     public function destroy(User $user)
     {
+        // Deletes user based on retrieved user params
         $user -> delete();
         return response("", 204);
     }

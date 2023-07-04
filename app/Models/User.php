@@ -59,7 +59,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         parent::boot();
 
-        // Define the cascading delete behavior
+        // Deletes all events related to the deleted user
         static::deleting(function ($user) {
             $user->events()->delete();
         });

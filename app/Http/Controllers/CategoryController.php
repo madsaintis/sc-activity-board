@@ -16,12 +16,13 @@ class CategoryController extends Controller
         return Category::all();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Controller for adding new tag
     public function store(StoreTagRequest $request)
     {
+        // Validate user input
         $data = $request->validated();
+
+        // Create new entry in category table
         $category = Category::create($data);
 
         return response()->json($category, 201);

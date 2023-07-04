@@ -41,3 +41,4 @@ class EventResource extends JsonResource
         return $user ? $user->favourites->contains('event_id', $this->id) : false;
     }
 }
+

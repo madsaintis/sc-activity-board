@@ -29,7 +29,6 @@ const logoStyles = {
   textAlign: 'left',
 };
 
-
 const toolbarStyles = {
   display: 'flex',
   justifyContent: 'space-between',
@@ -56,6 +55,8 @@ export default function Header() {
   });
   const { mobileView, drawerOpen } = state;
 
+
+  // Handle user logout
   const onLogout = (event) => {
     event.preventDefault();
   
@@ -67,6 +68,7 @@ export default function Header() {
   
   };
 
+  // Check for user window resize
   useEffect(() => {
     const setResponsiveness = () => {
       return window.innerWidth < 900
@@ -75,7 +77,6 @@ export default function Header() {
     };
 
     setResponsiveness();
-
     window.addEventListener('resize', setResponsiveness);
 
     return () => {
@@ -83,6 +84,7 @@ export default function Header() {
     };
   }, []);
 
+  // Display header for desktop view
   const displayDesktop = () => {
     return (
       <Toolbar style={toolbarStyles}>
@@ -92,6 +94,7 @@ export default function Header() {
     );
   };
 
+  // Display header for mobile view
   const displayMobile = () => {
     const handleDrawerOpen = () =>
       setState((prevState) => ({ ...prevState, drawerOpen: true }));
@@ -123,6 +126,7 @@ export default function Header() {
     );
   };
 
+  // Header components
   const headersData = [
     {
       label: 'Home',
@@ -144,6 +148,7 @@ export default function Header() {
     
   ];
 
+  // Put header components into a drawer in mobile view
   const getDrawerChoices = () => {
     return headersData.map(({ label, href, role, onClick }) => {
       if (onClick) { // Check if onClick is defined
@@ -176,15 +181,16 @@ export default function Header() {
     });
   };
   
-
+  // App logo
   const AppLogo = (
     <div>    
       <Typography variant="h5" component="h1" style={logoStyles}>
-      <Event /> SC Activity Board
+      <Event /> FC Activity Board
       </Typography>
     </div>
   );
 
+  // Display button for header in desktop view
   const getMenuButtons = () => {
     return headersData.map(({ label, href, role, onClick }) => {
       if (onClick) { // Check if onClick is defined

@@ -1,46 +1,50 @@
-import React, { useEffect, useState } from 'react'
-import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import interactionPlugin from "@fullcalendar/interaction"
-import { useStateContext } from '../../context/ContextProvider';
-import { Box, Modal, Typography, useTheme } from '@mui/material';
-import EventCreationModal from './EventCreationModal';
-import timeGridPlugin from '@fullcalendar/timegrid'
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from '@fullcalendar/list';
+import FullCalendar from '@fullcalendar/react';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import React, { useState } from 'react';
+import { useStateContext } from '../../context/ContextProvider';
+import EventCreationModal from './EventCreationModal';
 import EventModal from './EventModal';
-
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4,
-};
 
 export default function Calendar() {
 
-  const { user, setShowEventModal, setSelectedEvent, setSelectedDate, eventsData, getEvents, getTags, getPrivateEvents, setOpenCreationModal, openCreationModal, setOpenModal, openModal,theme} = useStateContext();
+  const { user, setSelectedEvent, setSelectedDate, eventsData, 
+    setOpenCreationModal, openCreationModal, setOpenModal, openModal} = useStateContext();
+  
+  // Adjust calendar height based on user screen
   const [contentHeight, setContentHeight] = useState(
     window.innerWidth < 577 ? 800 : 1000
   );
   
-  const handleEvent = (args) => {
+  // Handle when user click on an event
+  const handleEventClick = (args) => {
     setSelectedDate(args.event.start)
     setSelectedEvent(args);
 
+    // If user is the organiser or admin, shows event edit/creation modal
     if(args.event.extendedProps.isOrganiser || user.role === 'Admin') {
       setOpenCreationModal(true);
     }
 
+    // Else display event view modal
     else {
       setOpenModal(true);
     }
   }
 
+  // Handle when user click on a date
+  const handleDateClick = (args) => {
+    
+    // If chosen date already past, do not allow user to create new event
+    if (!isPastDate(args.date)) {
+      setSelectedDate(args.date);
+      setOpenCreationModal(true);
+    }
+  }
+
+  // Group past date in calendar
   const isPastDate = (date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -48,7 +52,6 @@ export default function Calendar() {
   };
 
 function determineDayCellClassNames(date) {
-  // Custom logic to determine the CSS class names
   let classNames = [];
   
   // Add class names based on your logic
@@ -59,16 +62,20 @@ function determineDayCellClassNames(date) {
   return classNames;
 }
 
+// Display event using fullcalendar library
  return (
     <div className='calendar-container'>
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin]}
         initialView='dayGridMonth'
         fixedWeekCount={false}
-        eventClick={handleEvent}
+        eventClick={handleEventClick}
+        dateClick={handleDateClick}
         contentHeight={contentHeight}
         displayEventTime={true}
+        dayCellClassNames={determineDayCellClassNames}
         eventDisplay='block'
+        dayMaxEventRows= {true}
         events={eventsData.map(event => {
           return {
             id: event.id,
@@ -90,22 +97,19 @@ function determineDayCellClassNames(date) {
             }
           };
         })}
-        dateClick={(args) => {
-          if (!isPastDate(args.date)) {
-            setSelectedDate(args.date);
-            setOpenCreationModal(true);
-          }
-        }}
+        
         headerToolbar={{
           left: 'prev,next',
           center: 'title',
-          right: 'dayGridMonth,listMonth' // user can switch between the two
+          right: 'dayGridMonth,listMonth' // Switches user between calendar and list layout
         }}
-        dayCellClassNames={determineDayCellClassNames}
         eventContent={(eventInfo) => (
           <div style={{ fontSize: '14px', padding: '0px 2px' }}>{eventInfo.event.title}</div>
         )}
         views={{
+          dayGridMonth: {
+            dayMaxEventRows: 3
+          },
           timeGridWeek: {
             eventTimeFormat: {
               hour: '2-digit',
@@ -117,8 +121,8 @@ function determineDayCellClassNames(date) {
         
       />
 
+  {/* Display modal on top of home page*/}
   {openCreationModal && <EventCreationModal />}
-  
   {openModal && <EventModal />}
   
     </div>

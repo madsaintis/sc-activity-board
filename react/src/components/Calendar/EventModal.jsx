@@ -1,56 +1,26 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useMemo, useState } from "react";
 import {
-  faTimesCircle,
-  faTrash,
-  faStar,
+  faStar
 } from "@fortawesome/free-solid-svg-icons";
-import { useStateContext } from "../../context/ContextProvider";
-import { useRef } from "react";
-import axiosClient from "../../axios-client";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Description, KeyboardReturn, LocationOn, Schedule, Sell, Title } from "@mui/icons-material";
 import {
-  Alert,
-  Autocomplete,
   Box,
-  Button,
   Chip,
-  FormControl,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  ListSubheader,
-  MenuItem,
   Modal,
-  Select,
-  TextField,
-  Typography,
+  TextField
 } from "@mui/material";
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import React, { useState } from "react";
 import ModalImage from "react-modal-image";
-import { Search, Description, LocationOn, Sell, Title, Schedule, KeyboardReturn } from "@mui/icons-material";
-import CloseIcon from "@mui/icons-material/Close";
-import TagSearch from "./TagSearch";
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import dayjs from 'dayjs';
-import { useEffect } from "react";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-
+import axiosClient from "../../axios-client";
+import { useStateContext } from "../../context/ContextProvider";
 
 export default function EventModal() {
 
-  const {
-    setShowEventModal,
-    selectedEvent,
-    setSelectedEvent,
-    selectedDate,
-    user,
-    getEvents,
-    setSelectedDate,
-    setNotification,
-    openModal,
-    setOpenModal,
-    tags
-  } = useStateContext();
+  const {selectedEvent, setSelectedEvent, user, getEvents, setSelectedDate, setNotification, 
+    openModal, setOpenModal} = useStateContext();
 
+  // Initialize values based on selected event information
   const title = selectedEvent.event.title;
   const description = selectedEvent.event.extendedProps.description;
   const location = selectedEvent.event.extendedProps.location;
@@ -74,42 +44,33 @@ export default function EventModal() {
     selectedEvent.event.extendedProps.isFavourite
   );
 
-  const theme = createTheme({
-    components: {
-      MuiTextField: {
-        styleOverrides: {
-          root: {
-            '&.Mui-disabled': {
-              color: 'black',
-            },
-          },
-        },
-      },
-    },
-  });
-
+  // Handle when user click on star button to add to favourite
   const addToFavorites = () => {
     const favoriteData = {
       userId: user.id,
       eventId: selectedEvent.event.id,
     };
 
+    // POST request to '/favourites' 
     axiosClient
       .post("/favourites", favoriteData)
       .then((response) => {
-        // Add any necessary logic here
         setNotification("Event added to favorites");
       })
+
+      // Catch error returned by server
       .catch((error) => {
         console.log(error);
       });
   };
 
+  // Handle when user click on star button to remove to favourite
   const removeFromFavorites = () => {
+
+    // DELETE request to '/favourites' 
     axiosClient
       .delete(`/favourites/${user.id}/${selectedEvent.event.id}`)
       .then((response) => {
-        // Add any necessary logic here
         setNotification("Event removed from favorites");
       })
       .catch((error) => {
@@ -134,37 +95,17 @@ export default function EventModal() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <Modal
+      <Modal className="event-modal-wrapper"
         open={openModal}
         onClose={(event, reason) => {
           if (reason && reason === 'backdropClick') return;
           handleCloseModal();
         }}
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          outline: 0
-        }}
       >
 
-        <Box className="modal"
-          sx={{
-            width: "auto",
-            maxWidth: "90%",
-            maxHeight: "70%",
-            bgcolor: "background.paper",
-            alignItems: "center",
-            justifyContent: "center",
-            p: 2,
-            overflow: "auto",
-            borderRadius: 2
-          }}
-        >
+        <Box className="event-modal">
           <div className="modal-header">
-            <div className="flex-container">
-
+            <div className="header-flex-container">
               <div className="title-container">
                 <h2 className="title">
                   {selectedEvent.event.title} <FontAwesomeIcon
@@ -189,219 +130,63 @@ export default function EventModal() {
                 </button>
               </div>
             </div>
-
           </div>
 
-          <div className="modal-content"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-
-
+          <div className="modal-content">
             {image ? (
-              <div
-                style={{
-                  maxWidth: "600px",
-                  maxHeight: "100%",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  position: "relative",
-                  overflow: "hidden",
-                  marginBottom: "10px",
-                }}
+              <div className="image-box"
               >
                 <ModalImage
                   small={largerImageURL}
                   large={largerImageURL}
                   hideDownload={true}
-                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
                 />
               </div>
             ) : (
-              <div
-                style={{
-                  maxWidth: "600px",
-                  maxHeight: "40vh",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  position: "relative",
-                  overflow: "hidden",
-                  marginBottom: "10px",
-                }}
-              >
-                <img
-                  src="https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
-                  alt="No Image"
-                  style={{ maxWidth: '100%', maxHeight: '30%' }}
-                />
+              <div className="image-box">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg" alt="No Image" />
               </div>
             )}
           </div>
 
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Title
-              sx={{
-                color: 'action.active',
-                mr: 1,
-                my: 0.5,
-                alignSelf: 'center'
-              }}
-            />
-            <TextField
-              multiline
-              fullWidth
-              label="Title"
-              variant="filled"
-              margin="normal"
-              size="small"
-              disabled
-              defaultValue={title}
-              sx={{
-                "& .MuiInputBase-input.Mui-disabled": {
-                  WebkitTextFillColor: "#000000",
-                  fontWeight: "bold",
-                },
-              }}
+          <Box className="textfield-box">
+            <Title className="textfield-icon"/>
+            <TextField className="textfield-disabled" multiline fullWidth label="Title" variant="filled"
+              margin="normal" size="small" disabled defaultValue={title}
             />
           </Box>
 
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <LocationOn
-              sx={{
-                color: 'action.active',
-                mr: 1,
-                my: 0.5,
-                alignSelf: 'center'
-              }}
-            />
-            <TextField
-              fullWidth
-              multiline
-              label="Location"
-              variant="filled"
-              margin="normal"
-              size="small"
-              disabled
-              defaultValue={location}
-              sx={{
-                "& .MuiInputBase-input.Mui-disabled": {
-                  WebkitTextFillColor: "#000000",
-                  fontWeight: "bold",
-                },
-              }}
+          <Box className="textfield-box">
+            <LocationOn className="textfield-icon"/>
+            <TextField className="textfield-disabled" fullWidth multiline label="Location" variant="filled"
+              margin="normal" size="small" disabled defaultValue={location}
             />
           </Box>
 
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <Description
-              sx={{
-                color: 'action.active',
-                mr: 1,
-                my: 0.5,
-                alignSelf: 'center'
-              }}
-            />
-            <TextField
-              fullWidth
-              label="Description"
-              variant="filled"
-              margin="normal"
-              size="small"
-              disabled
-              multiline
-              defaultValue={description}
-              sx={{
-                "& .MuiInputBase-input.Mui-disabled": {
-                  WebkitTextFillColor: "#000000",
-                  fontWeight: "bold",
-                },
-              }}
+          <Box className="textfield-box">
+            <Description className="textfield-icon" />
+            <TextField className="textfield-disabled" fullWidth label="Description" variant="filled"
+              margin="normal" size="small" disabled multiline defaultValue={description}
             />
           </Box>
 
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              mb: 2
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <Schedule
-                sx={{
-                  color: 'action.active',
-                  mr: 0.5,
-                  my: 0
-                }}
-              />
-              <TextField
-                fullWidth
-                label="Time"
-                variant="filled"
-                margin="normal"
-                size="small"
-                disabled
-                defaultValue={formattedStartTime + " - " + formattedEndTime}
-                sx={{
-                  "& .MuiInputBase-input.Mui-disabled": {
-                    WebkitTextFillColor: "#000000",
-                    fontWeight: "bold",
-                  },
-                }}
+          <Box className="textfield-time-box">
+            <Box className="textfield-time">
+              <Schedule className="textfield-time-icon" />
+              <TextField className="textfield-disabled" fullWidth multiline label="Time" variant="filled"
+                margin="normal" size="small" disabled defaultValue={formattedStartTime + " - " + formattedEndTime}
               />
             </Box>
-
           </Box>
 
-          <Box
-            sx={{
-              display: 'flex',
-            }}
-          >
-            <Sell
-              sx={{
-                color: 'action.active',
-                mr: 0.5,
-                my: 0.5,
-                alignSelf: 'left'
-              }}
-            />
+          <Box className="tag-box">
+            <Sell className="tag-icon"/>
             {selectedOption.map((option) => (
-              <Chip key={option.tag_id} label={option.tag_name} sx={{ mr: 0.5, mb: 2, backgroundColor: option.tag_colour, color: 'white' }} />
+              <Chip className="tag-chip" key={option.tag_id} label={option.tag_name} style={{ '--chip-background-color': option.tag_colour }}/>
             ))}
-
           </Box>
 
         </Box>
       </Modal>
-    </ThemeProvider>
   );
 }

@@ -16,12 +16,15 @@ class AuthController extends Controller
 {
     public function signup(SignupRequest $request){
 
+        // Validate data
         $data = $request->validated();
 
+        // Set user role to Event Organiser if user register with utm email
         if (Str::endsWith($data['email'], ['@utm.my', '@graduate.utm.my'])) {
             $data['role'] = 'Event Organiser';
         }
 
+        // Create new user in database
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -29,8 +32,13 @@ class AuthController extends Controller
             'role' => $data['role'] ?? 'Event Participant', // Default role if not set
         ]);
 
+        // Send email verification
         event(new Registered($user));
+
+        // Set user as logged in
         Auth::login($user);
+
+        // Create authorization token for the user
         $token = $user-> createToken('main')->plainTextToken;
         
         return response(compact('user', 'token'));
@@ -38,7 +46,10 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request) {
         
+        // Validate user credentials
         $credentials = $request->validated();
+
+        // Attempts to authenticate the credentials with the one stored in database
         if(!Auth::attempt($credentials)) {
             return response([
                 'message' => 'Wrong email address or password.'
@@ -46,11 +57,13 @@ class AuthController extends Controller
         }
 
         /**@var User $user */
+        // Log users into the website
         $user = Auth::user();
+
+        // Create access token for user
         $token = $user->createToken('main')->plainTextToken;
 
         return response(compact('user', 'token'));
-
     }
 
     public function logout(Request $request){

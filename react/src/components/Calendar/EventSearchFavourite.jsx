@@ -7,31 +7,34 @@ export default function EventSearchFavourite() {
 
   const { tags, favouriteEventsData, setEvents, setFavouritedEvents, initialFavouritedEventsData } = useStateContext();
 
-//   const options = [
-//     ...tags.map((tag) => ({ tag_name: tag.tag_name, isTag: true })),
-//     ...favouriteEventsData.map((event) => ({ title: event.title, isTag: false })),
-//   ];
-console.log(initialFavouritedEventsData);
-const options = [
-    ...tags.map((tag) => ({ tag_name: tag.tag_name, isTag: true })),
-    ...favouriteEventsData.map((event) => ({
-      title: event.title,
-      isTag: false,
-    })),
-    // { title: "My Event", isTag: false, isOrganiser: true }, // Add the new option
-  ];
+  // The dropdown options
+  const options = [
+      ...tags.map((tag) => ({ tag_name: tag.tag_name, isTag: true })),
+      ...favouriteEventsData.map((event) => ({
+        title: event.title,
+        isTag: false,
+      })),
+    ];
 
+  // Handles the dropdown changes and filter events
   const handleOptionChange = (event, selectedOptions) => {
-
+    
+    // If filter field is empty, reset the events shown in the 
+    // calendar to the initial view
     if (selectedOptions.length === 0) {
         setFavouritedEvents(initialFavouritedEventsData);
       return;
     }
     
+    // Filter events based on:
     const filteredEvents = initialFavouritedEventsData.filter((event) => {
+        
+        // Based on titles
         const matchesTitle = selectedOptions.some(
           (option) => option.isTag === false && option.title === event.title
         );
+
+        // Based on event tags
         const matchesCategory = selectedOptions.some(
           (option) =>
             option.isTag === true &&
@@ -39,17 +42,15 @@ const options = [
               (category) => category.tag_name.toLowerCase() === option.tag_name.toLowerCase()
             )
         );
-        // const matchesOrganiser = selectedOptions.some(
-        //   (option) =>
-        //     option.isTag === false &&
-        //     (option.isOrganiser || (option.title === "My Event" && event.isOrganiser))
-        // );
+
         return matchesTitle || matchesCategory;
       });
     
+      // Update the event list
       setFavouritedEvents(filteredEvents);
     };
 
+   // Check if default value is same as dropdown options
   const isOptionEqualToValue = (option, value) => {
     if (option.isTag !== value.isTag) {
       return false;

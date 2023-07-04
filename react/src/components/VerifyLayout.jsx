@@ -16,6 +16,11 @@ export default function VerifyLayout() {
     });
   };
 
+  // If token does not exist in local storage, redirect to login
+  if (!token) {
+    return <Navigate to="/login" />;
+  }
+  
   useEffect(() => {
     axiosClient.get("/user").then(({ data }) => {
       setUser(data);
