@@ -247,6 +247,10 @@ export default function EventCreationModal() {
                 <h1 className="title">
                   {!selectedEvent ? "Create Event" : selectedEvent.event.title}
                 </h1>
+                <h4>
+                  {selectedEvent && selectedEvent.event.extendedProps.isPublic && "Public"}
+                  {selectedEvent && !selectedEvent.event.extendedProps.isPublic && "Private"}
+                </h4>
               </div>
               <div className="btn-container">
                 <button
@@ -298,22 +302,22 @@ export default function EventCreationModal() {
           </div>
 
           <Box className="textfield-box">
-            <Title className="textfield-icon"/>
-            <TextField fullWidth inputRef={titleRef} label="Title" variant="outlined" margin="dense" size="small" defaultValue={title} />
+            <Title className="textfield-icon" />
+            <TextField className="textfield-disabled" fullWidth inputRef={titleRef} label="Title" variant="outlined" margin="dense" size="small" defaultValue={title} disabled={selectedEvent} variant="filled"/>
           </Box>
 
           <Box className="textfield-box">
-            <LocationOn className="textfield-icon"/>
+            <LocationOn className="textfield-icon" />
             <TextField fullWidth inputRef={LocationRef} label="Location" variant="outlined" margin="dense" size="small" defaultValue={location} />
           </Box>
 
           <Box className="textfield-box">
-            <Description className="textfield-icon"/>
+            <Description className="textfield-icon" />
             <TextField fullWidth inputRef={descriptionRef} label="Description" variant="outlined" margin="dense" size="small" defaultValue={description} multiline />
           </Box>
 
           <Box className="textfield-box">
-            <Sell className="textfield-icon"/>
+            <Sell className="textfield-icon" />
             <TagSearch onLabelChange={handleLabelChange} defaultCategories={selectedOption} />
           </Box>
 
@@ -336,25 +340,30 @@ export default function EventCreationModal() {
             </Box>
           </Box>
 
-          <FormControlLabel
-            label="Publish event to public?"
-            labelPlacement="end"
-            control={
-              <Checkbox
-                disabled={isEventParticipant()}
-                checked={isPublic}
-                color="secondary"
-                onChange={() => setIsPublic(!isPublic)}
-                id="publicCheckbox"
-              />
-            }
-          />
+          {!selectedEvent && (
+            <FormControlLabel
+              label="Publish event to public?"
+              labelPlacement="end"
+              control={
+                <Checkbox
+                  disabled={isEventParticipant()}
+                  checked={isPublic}
+                  color="secondary"
+                  onChange={() => setIsPublic(!isPublic)}
+                  id="publicCheckbox"
+                />
+              }
+            />
+          )}
 
-          {!selectedEvent && <button className="btn btn-block" disabled={isDisabled}>Create</button>}
+
+          {!selectedEvent && <button className="btn btn-block" disabled={isDisabled}>
+            {isDisabled ? "Creating..." : "Create"}
+          </button>}
 
           {selectedEvent?.event?.extendedProps.organiser === user.name && (
             <button className="btn btn-block" onClick={onUpdate} disabled={isDisabled}>
-              Edit
+              {isDisabled ? "Editing..." : "Edit"}
             </button>
           )}
 

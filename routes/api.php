@@ -51,4 +51,8 @@ Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
 ->name('verification.verify');
+Route::post('/recover-password', [PasswordResetController::class, 'send'])->name('password.reset');
+Route::get('/recover-password', [PasswordResetController::class, 'redirect'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'reset']);
+
 

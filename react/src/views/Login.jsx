@@ -82,6 +82,11 @@ export default function Login() {
           <p className='message'>
             Not Registered? <Link to="/signup">Create an account</Link>
           </p>
+
+          {/* Reset Password link */}
+          <p className='message'>
+            Forgot Password? <Link to="/forget-password">Recover password</Link>
+          </p>
         </form>
       </div>
 

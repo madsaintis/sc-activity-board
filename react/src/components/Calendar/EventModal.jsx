@@ -1,5 +1,5 @@
 import {
-  faStar
+  faStar, faTrash
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Description, KeyboardReturn, LocationOn, Schedule, Sell, Title } from "@mui/icons-material";
@@ -19,6 +19,7 @@ export default function EventModal() {
 
   const {selectedEvent, setSelectedEvent, user, getEvents, setSelectedDate, setNotification, 
     openModal, setOpenModal} = useStateContext();
+  const [isDisabled, setIsDisabled] = useState(false);
 
   // Initialize values based on selected event information
   const title = selectedEvent.event.title;
@@ -94,6 +95,26 @@ export default function EventModal() {
     setSelectedEvent(null);
   }
 
+  // Event Deletion Function
+  const onDelete = (event) => {
+    event.preventDefault();
+    setIsDisabled(true);
+
+    // Asks for user confirmation
+    if (!window.confirm("Are you sure you want to delete this event?")) {
+      return;
+    }
+
+    // DELETE request to API '/events'
+    axiosClient.delete(`/events/${selectedEvent.event.id}`).then(() => {
+      getEvents();
+      setNotification("Event was successfully deleted");
+      setIsDisabled(false);
+      setOpenModal(false);
+      setSelectedEvent(null);
+    });
+  };
+
   return (
       <Modal className="event-modal-wrapper"
         open={openModal}
@@ -106,6 +127,11 @@ export default function EventModal() {
         <Box className="event-modal">
           <div className="modal-header">
             <div className="header-flex-container">
+            {user.role === 'Admin' && (
+                  <button className="btn-delete" onClick={onDelete} disabled={isDisabled}>
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                )}
               <div className="title-container">
                 <h2 className="title">
                   {selectedEvent.event.title} <FontAwesomeIcon

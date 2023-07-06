@@ -10,6 +10,8 @@ import Login from "./views/Login.jsx";
 import Signup from "./views/Signup.jsx";
 import UserForm from "./views/UserForm.jsx";
 import Users from "./views/Users.jsx";
+import ForgetPassword from "./views/ForgetPassword.jsx";
+import RecoverPassword from "./views/RecoverPassword.jsx";
 
 // Website routes
 const router = createBrowserRouter([
@@ -69,11 +71,19 @@ const router = createBrowserRouter([
         path: "/signup",
         element: <Signup />,
       },
-      
+      {
+        path: "/forget-password",
+        element: <ForgetPassword />,
+      },
+      {
+        path: "/change-password",
+        element: <RecoverPassword />,
+      },
       {
         path: "*",
         element: <Login />,
       },
+      
     ],
   },
 ]);

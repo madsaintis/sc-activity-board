@@ -6,6 +6,11 @@ use App\Models\Event;
 use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Http\Resources\EventResource;
+use App\Mail\EventCancellation;
+use App\Mail\EventUpdate;
+use Illuminate\Support\Facades\Mail;
+use App\Models\Favourite;
+use App\Models\User;
 
 class EventController extends Controller
 {
@@ -60,38 +65,65 @@ class EventController extends Controller
     }
 
     // Controller for updating existing event
-   public function update(UpdateEventRequest $request, Event $event)
-{
-    $data = $request->validated();
+    public function update(UpdateEventRequest $request, Event $event)
+    {
+        $data = $request->validated();
+    
+        // Check if the 'changed' value from the request is true
+        $changed = $request->input('changed') === 'true';
+    
+        // Handle poster upload if the image file has changed
+        if ($changed && $request->hasFile('poster')) {
+            $poster = $request->file('poster');
+            $data['poster'] = file_get_contents($poster);
+        } elseif ($changed) {
+            $data['poster'] = null;
+        }
+    
+        // Update the event data
+        $event->update($data);
+    
+        // Update the event category table based on new event categories
+        if (isset($data['categories']) && is_array($data['categories'])) {
+            $event->categories()->sync($data['categories']);
+        } else {
+            // If no categories are provided, detach all categories
+            $event->categories()->detach();
+        }
+    
+        // Send update email notification if the event details (excluding poster) have changed
+        if ($event->wasChanged() && !($changed && $request->hasFile('poster'))) {
 
-    // Check the 'changed' value from the request
-    $changed = $request->input('changed') === 'true';
+            // Get the list of user IDs who have favorited the event
+            $userIds = Favourite::where('event_id', $event->id)->pluck('user_id');
 
-    // Handle poster upload if the image file has changed
-    if ($changed && $request->hasFile('poster')) {
-        $poster = $request->file('poster');
-        $data['poster'] = file_get_contents($poster);
-    } elseif ($changed) {
-        $data['poster'] = null;
+            // Retrieve the users based on the user IDs
+            $users = User::whereIn('id', $userIds)->get();
+    
+            // Send notification emails to the users
+            foreach ($users as $user) {
+                Mail::to($user->email)->send(new EventUpdate($event));
+            }
+        }
+    
+        return response(new EventResource($event), 201);
     }
-
-    // Update the event data
-    $event->update($data);
-
-    // Update the event category table based on new event categories
-    if (isset($data['categories']) && is_array($data['categories'])) {
-        $event->categories()->sync($data['categories']);
-    } else {
-        // If no categories are provided, detach all categories
-        $event->categories()->detach();
-    }
-
-    return response(new EventResource($event), 201);
-}
 
     // Controller for deleting existing event
     public function destroy(Event $event)
     {
+    
+        // Get the list of user IDs who have favorited the event
+        $userIds = Favourite::where('event_id', $event->id)->pluck('user_id');
+
+        // Retrieve the users based on the user IDs
+        $users = User::whereIn('id', $userIds)->get();
+
+        // Send notification emails to the users
+        foreach ($users as $user) {
+            Mail::to($user->email)->send(new EventCancellation($event));
+        }
+
         // Remove all entries in event category table that related 
         // to this event
         $event->categories()->detach();
